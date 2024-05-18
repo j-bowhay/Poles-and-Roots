@@ -19,18 +19,21 @@ class AAAResult:
 
     def __call__(self, zz) -> np.ndarray:
         # evaluate rational function in barycentric form.
+        zz = np.asarray(zz)
         zv = np.ravel(zz)
 
         # Cauchy matrix
-        CC = 1 / (zv[:, np.newaxis] - self.zj)
+        with np.errstate(divide="ignore"):
+            CC = 1 / (zv[:, np.newaxis] - self.zj)
         # Vector of values
-        r = CC @ (self.wj * self.fj) / (CC @ self.wj)
+        with np.errstate(invalid="ignore"):
+            r = CC @ (self.wj * self.fj) / (CC @ self.wj)
 
         # Deal with input inf: r(inf) = lim r(zz) = sum(w.*f) / sum(w):
         r[np.isinf(zv)] = np.sum(self.wj * self.fj) / np.sum(self.wj)
 
         # Deal with NaN:
-        ii = np.nonzero(np.isnan(r))
+        ii = np.nonzero(np.isnan(r))[0]
         for jj in ii:
             if np.isnan(zv[jj]) or not np.any(zv[jj] == self.zj):
                 # r(NaN) = NaN is fine.
@@ -120,7 +123,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
             wj = V @ np.ones(nm) / np.sqrt(nm)
         else:
             # No rows at all (needed for Octave)
-            wj = np.ones(m) / np.sqrt(m)
+            wj = np.ones(m + 1) / np.sqrt(m + 1)
 
         # Compute rational approximant:
         # Omit columns with wj = 0
@@ -129,9 +132,9 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
         N = C[:, : m + 1][:, i0] @ (wj[i0] * fj[: m + 1][i0])
         # Denominator
         D = C[:, : m + 1][:, i0] @ wj[i0]
-        with np.errstate(divide="ignore"):
+        with np.errstate(invalid="ignore"):
             R = N / D
-        D_inf = ~np.isfinite(D)
+        D_inf = np.isinf(D)
         # Interpolate at supp pts with wj~=0
         R[D_inf] = F[D_inf]
 
