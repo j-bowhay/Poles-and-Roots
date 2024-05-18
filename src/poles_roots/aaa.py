@@ -58,7 +58,7 @@ def _AAA_iv(F, Z, mmax):
     return F, Z, mmax 
 
 
-def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13):
+def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAAResult:
     F, Z, mmax = _AAA_iv(F, Z, mmax)
 
     # Currently we don't handle `F` being callable
