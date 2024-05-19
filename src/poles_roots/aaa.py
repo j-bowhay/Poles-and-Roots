@@ -221,7 +221,7 @@ def _clean_up(pol, res, w, z, f, Z, F, cleanup_tol):
     if ni == 0:
         return w, z, f, Z, F
     else:
-        warnings.warn(f"{ni} Froissart doublets detected.", stacklevel=2)
+        warnings.warn(f"{ni} Froissart doublets detected.", stacklevel=3)
 
     # For each spurious pole find and remove closest support point:
     for j in range(ni):
@@ -245,12 +245,12 @@ def _clean_up(pol, res, w, z, f, Z, F, cleanup_tol):
     SF = scipy.sparse.spdiags(F, 0, M, M)
     Sf = np.diag(f)
     # Cauchy matrix
-    C = 1 / (Z - z.T)
+    C = 1 / np.subtract.outer(Z, z)
     # Loewner matrix
     A = SF @ C - C @ Sf
 
     # Solve least-squares problem to obtain weights:
     _, _, V = scipy.linalg.svd(A, full_matrices=False)
-    w = V[:, m]
+    w = V[:, m-1]
 
     return w, z, f, Z, F
