@@ -24,7 +24,7 @@ class AAAResult:
 
         # Cauchy matrix
         with np.errstate(divide="ignore"):
-            CC = 1 / (zv[:, np.newaxis] - self.zj)
+            CC = 1 / np.subtract.outer(zv, self.zj)
         # Vector of values
         with np.errstate(invalid="ignore"):
             r = CC @ (self.wj * self.fj) / (CC @ self.wj)
@@ -185,7 +185,7 @@ def _prz(zj, fj, wj):
 
     # Compute residues via formula for res of quotient of analytic functions:
     N = (1 / (pol[:, np.newaxis] - zj)) @ (fj * wj)
-    Ddiff = -((1 / (pol[:, np.newaxis] - zj)) ** 2) @ wj
+    Ddiff = -((1 / np.subtract.outer(pol, zj)) ** 2) @ wj
     res = N / Ddiff
 
     # Compute zeros via generalized eigenvalue problem:
