@@ -23,7 +23,7 @@ class AAAResult:
         zv = np.ravel(zz)
 
         # Cauchy matrix
-        with np.errstate(divide="ignore"):
+        with np.errstate(invalid="ignore", divide="ignore"):
             CC = 1 / np.subtract.outer(zv, self.zj)
         # Vector of values
         with np.errstate(invalid="ignore"):
@@ -78,13 +78,13 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
     # absolute tolerance
     abstol = tol * np.linalg.norm(F, ord=np.inf)
     J = np.arange(M)
-    zj = np.empty(mmax)
-    fj = np.empty(mmax)
+    zj = np.empty(mmax, dtype=np.complex128)
+    fj = np.empty(mmax, dtype=np.complex128)
     # Cauchy matrix
-    C = np.empty((M, mmax))
+    C = np.empty((M, mmax), dtype=np.complex128)
     # Loewner matrix
-    A = np.empty((M, mmax))
-    errvec = np.empty(mmax)
+    A = np.empty((M, mmax), dtype=np.complex128)
+    errvec = np.empty(mmax, dtype=np.complex128)
     R = np.mean(F) * np.ones_like(J)
 
     # AAA iteration
@@ -97,7 +97,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
         # Update data values
         fj[m] = F[J[jj]]
         # Next column of Cauchy matrix
-        with np.errstate(divide="ignore"):
+        with np.errstate(divide="ignore", invalid="ignore"):
             C[:, m] = 1 / (Z - Z[J[jj]])
         # Update index vector
         J = np.delete(J, jj)
@@ -127,16 +127,17 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
 
         # Compute rational approximant:
         # Omit columns with wj = 0
-        i0 = np.nonzero(wj != 0)[0]
-        # Numerator
-        N = C[:, : m + 1][:, i0] @ (wj[i0] * fj[: m + 1][i0])
-        # Denominator
-        D = C[:, : m + 1][:, i0] @ wj[i0]
+        i0 = np.nonzero(wj)[0]
         with np.errstate(invalid="ignore"):
-            R = N / D
-        D_inf = np.isinf(D)
+            # Numerator
+            N = C[:, : m + 1][:, i0] @ (wj[i0] * fj[: m + 1][i0])
+            # Denominator
+            D = C[:, : m + 1][:, i0] @ wj[i0]
         # Interpolate at supp pts with wj~=0
-        R[D_inf] = F[D_inf]
+        D_inf = np.isinf(D) | np.isnan(D)
+        D[D_inf] = 1
+        N[D_inf] = F[D_inf]
+        R = N / D
 
         # Check if converged:
         max_err = np.linalg.norm(F - R, ord=np.inf)
@@ -175,7 +176,7 @@ def _prz(zj, fj, wj):
     B = np.eye(m + 1)
     B[0, 0] = 0
 
-    E = np.zeros_like(B)
+    E = np.zeros_like(B, dtype=np.complex128)
     E[0, 1:] = wj
     E[1:, 0] = 1
     np.fill_diagonal(E[1:, 1:], zj)
@@ -189,7 +190,7 @@ def _prz(zj, fj, wj):
     res = N / Ddiff
 
     # Compute zeros via generalized eigenvalue problem:
-    E = np.zeros_like(B)
+    E = np.zeros_like(B, dtype=np.complex128)
     E[0, 1:] = wj * fj
     E[1:, 0] = 1
     np.fill_diagonal(E[1:, 1:], zj)
@@ -209,7 +210,7 @@ def _clean_up(pol, res, w, z, f, Z, F, cleanup_tol):
     else:
         geometric_mean_of_abs_F = 0
 
-    Z_distances = np.empty(pol.size)
+    Z_distances = np.empty(pol.size, dtype=np.complex128)
 
     for j, pol_j in enumerate(pol):
         Z_distances[j] = np.min(np.abs(pol_j - Z))
