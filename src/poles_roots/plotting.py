@@ -15,7 +15,6 @@ def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
     else:
         phi = lambda t:  t - .5*np.cos(1.5*t)**3*np.sin(1.5*t)
     
-    colors_values = np.mod(phi( np.angle(f(zz)) - np.pi)+ np.pi - theta, 2*np.pi) + theta
-    # TODO: Work out if the color shift is needed
-    im = ax.imshow(colors_values, origin="lower", extent=domain, cmap="hsv", vmin=theta, vmax=theta+2*np.pi)
+    angle = np.mod(phi( np.angle(f(zz)) - np.pi)+ np.pi - theta, 2*np.pi) + theta
+    im = ax.pcolormesh(np.real(zz), np.imag(zz), angle, shading='gouraud', cmap="twilight_shifted")
     return im
