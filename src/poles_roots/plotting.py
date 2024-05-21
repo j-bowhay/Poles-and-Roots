@@ -17,4 +17,6 @@ def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
     
     angle = np.mod(phi( np.angle(f(zz)) - np.pi)+ np.pi - theta, 2*np.pi) + theta
     im = ax.pcolormesh(np.real(zz), np.imag(zz), angle, shading='gouraud', cmap="twilight_shifted")
+    ax.set_xlabel(r"$\Re$(z)")
+    ax.set_ylabel(r"$\Im$(z)")
     return im

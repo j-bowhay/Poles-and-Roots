@@ -1,28 +1,34 @@
 import numpy as np
 
 
-def func0(z):
+def func0(z, return_jac=False):
     out = 1 / (z - 0.5)
     out_jac = -1 / (z - 0.5) ** 2
 
-    return out, out_jac
+    if return_jac:
+        return out, out_jac
+    return out
 
 
-def func1(z):
+def func1(z, return_jac=False):
     out = z - 2
     out_jac = 1
 
-    return out, out_jac
+    if return_jac:
+        return out, out_jac
+    return out
 
 
-def func2(z):
+def func2(z, return_jac=False):
     out = np.exp(3 * z) + 2 * z * np.cos(z) - 1
     out_jac = 3 * np.exp(3 * z) + 2 * (np.cos(z) - z * np.sin(z))
 
-    return out, out_jac
+    if return_jac:
+        return out, out_jac
+    return out
 
 
-def func3(z):
+def func3(z, return_jac=False):
     out = z * z * (z - 1) * (z - 2) * (z - 3) * (z - 4) + z * np.sin(z)
     out_jac = (
         2 * z * (3 * z * z * z * z - 25 * z * z * z + 70 * z * z - 75 * z + 24)
@@ -30,10 +36,12 @@ def func3(z):
         + z * np.cos(z)
     )
 
-    return out, out_jac
+    if return_jac:
+        return out, out_jac
+    return out
 
 
-def func4(z):
+def func4(z, return_jac=False):
     out = (
         z
         * z
@@ -48,10 +56,12 @@ def func4(z):
         + (2 * (z * z - 2) * np.exp(2 * z) - z * (z - 2)) * np.cos(z)
     ) + (-z * (z - 2) * np.exp(2 * z) - 4 * z + 4) * np.sin(z)
 
-    return out, out_jac
+    if return_jac:
+        return out, out_jac
+    return out
 
 
-def func5(z):
+def func5(z, return_jac=False):
     out = (
         (z - 1)
         * (z - 2)
@@ -71,4 +81,6 @@ def func5(z):
         * (194832 + (z - 11) * z * (14124 + 5 * (z - 11) * z * (88 + (z - 11) * z)))
     )
 
-    return out, out_jac
+    if return_jac:
+        return out, out_jac
+    return out
