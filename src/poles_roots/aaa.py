@@ -144,6 +144,9 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
         errvec[m] = max_err
         if max_err <= abstol:
             break
+    
+    if m == mmax - 1:
+        warnings.warn(f"Failed to converge within {mmax} iterations", stacklevel=2)
 
     # Trim off unused array allocation
     zj = zj[: m + 1]
