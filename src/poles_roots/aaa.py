@@ -144,7 +144,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
         errvec[m] = max_err
         if max_err <= abstol:
             break
-    
+
     if m == mmax - 1:
         warnings.warn(f"Failed to converge within {mmax} iterations", stacklevel=2)
 
@@ -255,6 +255,6 @@ def _clean_up(pol, res, w, z, f, Z, F, cleanup_tol):
 
     # Solve least-squares problem to obtain weights:
     _, _, V = scipy.linalg.svd(A, full_matrices=False)
-    w = V[:, m-1]
+    w = V[:, m - 1]
 
     return w, z, f, Z, F
