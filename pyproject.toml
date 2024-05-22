@@ -18,19 +18,15 @@ dev = [
     "ruff",
     "pytest",
     "pytest-xdist",
-    "mypy",
-]
-
-report = [
-    "notebook",
-    "SciencePlots"
 ]
 
 [build-system]
-requires = ["setuptools>=43.0.0", "wheel"]
+requires = ["setuptools>=43.0.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.ruff]
+
+src = ["src"]
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
@@ -61,7 +57,14 @@ line-length = 88
 [tools.ruff.lint]
 
 # Enable Pyflakes `E` and `F` codes by default.
-select = ["E", "F", "B", "I"]
+select = ["E", "F"]
+
+extend-select = [
+  "B",  # flake8-bugbear
+  "I",  # isort
+  "UP",  # pyupgrade
+]
+
 ignore = []
 
 # Allow unused variables when underscore-prefixed.
