@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 
-from poles_roots.integration import complex_integration
+from poles_roots.integration import complex_integration, argument_principal
 
 
 def quadratic(z):
@@ -33,6 +33,10 @@ def z_inv(z):
     return 1 / z
 
 
+def z_inv_jac(z):
+    return -1 / z**2
+
+
 def param_3(t):
     return np.exp(t * 1j)
 
@@ -51,3 +55,16 @@ def param_3_jac(t):
 )
 def test_complex_integration(f, param, param_jac, limits, expected):
     assert_allclose(complex_integration(f, param, param_jac, limits), expected)
+
+
+@pytest.mark.parametrize(
+    "f,f_jac,param,param_jac,limits,expected",
+    [
+        (z_inv, z_inv_jac, param_3, param_3_jac, (0, 2 * np.pi), -1),
+        (lambda z: z, lambda z: 1, param_3, param_3_jac, (0, 2 * np.pi), 1),
+    ],
+)
+def test_argument_principal(f, f_jac, param, param_jac, limits, expected):
+    assert_allclose(
+        argument_principal(f, f_jac, param, param_jac, limits=limits), expected
+    )

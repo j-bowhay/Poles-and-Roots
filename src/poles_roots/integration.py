@@ -26,7 +26,15 @@ def complex_integration(
     complex
         Value of the integral
     """
+
     def _f(t):
         return f(param(t)) * param_jac(t)
 
     return scipy.integrate.quad(_f, *limits, complex_func=True)[0]
+
+
+def argument_principal(f, f_jac, param, param_jac, limits):
+    def _f(t):
+        return f_jac(t) / f(t)
+
+    return complex_integration(_f, param, param_jac, limits) / (2 * np.pi * 1j)
