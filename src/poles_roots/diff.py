@@ -1,6 +1,6 @@
 import numpy as np
 
-h = np.finfo(np.float64).eps
+h = np.sqrt(np.finfo(np.float64).eps)
 
 
 def derivative(f, z, /):
