@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 import scipy
 
@@ -7,6 +9,8 @@ def complex_integration(
     param: callable,
     param_jac: callable,
     limits: tuple[float, float] = (0, 1),
+    *,
+    quad_kwargs: Optional[dict] = None,
 ) -> complex:
     """Complex path integration
 
@@ -30,7 +34,9 @@ def complex_integration(
     def _f(t):
         return f(param(t)) * param_jac(t)
 
-    return scipy.integrate.quad(_f, *limits, complex_func=True)[0]
+    quad_kwargs = {} if quad_kwargs is None else quad_kwargs
+
+    return scipy.integrate.quad(_f, *limits, complex_func=True, **quad_kwargs)[0]
 
 
 def argument_principal(
@@ -39,10 +45,17 @@ def argument_principal(
     param: callable,
     param_jac: callable,
     limits: tuple[float, float],
+    quad_kwargs: Optional[dict] = None,
 ) -> float:
-    """Compute the argument principal integral.
-    """
+    """Compute the argument principal integral."""
+
     def _f(t):
         return f_jac(t) / f(t)
 
-    return complex_integration(_f, param, param_jac, limits) / (2 * np.pi * 1j)
+    return complex_integration(
+        _f,
+        param,
+        param_jac,
+        limits,
+        quad_kwargs=quad_kwargs,
+    ) / (2 * np.pi * 1j)
