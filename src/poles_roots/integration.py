@@ -33,7 +33,15 @@ def complex_integration(
     return scipy.integrate.quad(_f, *limits, complex_func=True)[0]
 
 
-def argument_principal(f, f_jac, param, param_jac, limits):
+def argument_principal(
+    f: callable,
+    f_jac: callable,
+    param: callable,
+    param_jac: callable,
+    limits: tuple[float, float],
+) -> float:
+    """Compute the argument principal integral.
+    """
     def _f(t):
         return f_jac(t) / f(t)
 
