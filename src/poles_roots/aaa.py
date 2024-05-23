@@ -100,6 +100,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
         with np.errstate(divide="ignore", invalid="ignore"):
             C[:, m] = 1 / (Z - Z[J[jj]])
         # Update index vector
+        # TODO: switch to boolean mask once happy with everything else
         J = np.delete(J, jj)
         # Update Loewner matrix
         with np.errstate(invalid="ignore"):
@@ -122,7 +123,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
             # Aim for non-sparse wt vector
             wj = V @ np.ones(nm) / np.sqrt(nm)
         else:
-            # No rows at all (needed for Octave)
+            # No rows at all (needed for Octave) DO WE NEED THIS
             wj = np.ones(m + 1) / np.sqrt(m + 1)
 
         # Compute rational approximant:
