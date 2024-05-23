@@ -6,6 +6,8 @@ import scipy
 import scipy.linalg
 import scipy.sparse
 
+import matlab
+
 
 @dataclass
 class AAAResult:
@@ -60,7 +62,9 @@ def _AAA_iv(F, Z, mmax):
     return F, Z, mmax
 
 
-def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAAResult:
+def AAA(
+    F, Z, eng=None, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13,
+) -> AAAResult:
     F, Z, mmax = _AAA_iv(F, Z, mmax)
 
     # Currently we don't handle `F` being callable
@@ -111,6 +115,11 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
         if J.size >= m + 1:
             # Reduced SVD
             _, s, V = scipy.linalg.svd(A[J, : m + 1], full_matrices=False)
+            # _, s, V = eng.svd(
+            #     matlab.double(A[J, : m + 1], is_complex=True), 0, nargout=3,
+            # )
+            # s = np.diag(np.atleast_2d(s))
+            # V = np.atleast_2d(np.array(V))
             # Treat case of multiple min sing val
             mm = np.nonzero(s == np.min(s))[0]
             nm = mm.size
