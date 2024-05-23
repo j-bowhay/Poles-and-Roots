@@ -12,13 +12,21 @@ def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
     zz = xx + yy * 1j
 
     if classic:
-        phi = lambda t: t
+
+        def phi(t):
+            return t
     else:
-        phi = lambda t: t - 0.5 * np.cos(1.5 * t) ** 3 * np.sin(1.5 * t)
+
+        def phi(t):
+            return t - 0.5 * np.cos(1.5 * t) ** 3 * np.sin(1.5 * t)
 
     angle = np.mod(phi(np.angle(f(zz)) - np.pi) + np.pi - theta, 2 * np.pi) + theta
     im = ax.pcolormesh(
-        np.real(zz), np.imag(zz), angle, shading="gouraud", cmap="twilight_shifted"
+        np.real(zz),
+        np.imag(zz),
+        angle,
+        shading="gouraud",
+        cmap="twilight_shifted",
     )
     ax.set_xlabel(r"$\Re$(z)")
     ax.set_ylabel(r"$\Im$(z)")
