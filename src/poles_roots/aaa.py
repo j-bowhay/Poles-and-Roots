@@ -111,6 +111,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
         if J.size >= m + 1:
             # Reduced SVD
             _, s, V = scipy.linalg.svd(A[J, : m + 1], full_matrices=False)
+            V = V.conj().T
             # Treat case of multiple min sing val
             mm = np.nonzero(s == np.min(s))[0]
             nm = mm.size

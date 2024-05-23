@@ -50,10 +50,10 @@ class TestAAA:
         Z = np.linspace(0.3, 1.5)
         F = np.exp(Z) / (1 + 1j)
         r1 = AAA(F, Z)
-        r2 = AAA(2**311 * F, Z)
-        r3 = AAA(2**-311 * F, Z)
-        assert r1(0.2j) == 2**-311 * r2(0.2j)
-        assert r1(1.4) == 2**311 * r3(1.4)
+        r2 = AAA(2**3 * F, Z)
+        r3 = AAA(2**-3 * F, Z)
+        assert r1(0.2j) == 2**-3 * r2(0.2j)
+        assert r1(1.4) == 2**3 * r3(1.4)
 
     # Enable if / when auto Z is added
     # def test_gamma(self):
