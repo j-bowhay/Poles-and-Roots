@@ -17,13 +17,13 @@ class TestAAA:
         assert_equal(r(np.nan), np.nan)
         assert np.isfinite(r(np.inf))
 
-        m1 = r.zj.size
+        m1 = r.support_points.size
 
         r2 = AAA(F, Z, mmax=m1 - 1)
-        assert r2.zj.size == m1 - 1
+        assert r2.support_points.size == m1 - 1
 
         AAA(F, Z, tol=1e-3)
-        assert r2.zj.size < m1
+        assert r2.support_points.size < m1
 
     def test_tan(self):
         Z = np.linspace(-1, 1, num=1000)
@@ -31,10 +31,10 @@ class TestAAA:
         r = AAA(F, Z)
 
         assert_allclose(r(Z), F, atol=10 * TOL)
-        assert_array_less(np.min(np.abs(r.zer)), TOL)
-        assert_array_less(np.min(np.abs(r.pol - 0.5)), TOL)
+        assert_array_less(np.min(np.abs(r.zeros)), TOL)
+        assert_array_less(np.min(np.abs(r.poles - 0.5)), TOL)
         # Test for spurious poles
-        assert np.min(np.abs(r.res)) > 1e-13
+        assert np.min(np.abs(r.residuals)) > 1e-13
 
     def test_short_cases(self):
         Z = [0, 1]
@@ -85,9 +85,9 @@ class TestAAA:
     def test_residues(self):
         X = np.linspace(-1.337, 2, num=537)
         r = AAA(np.exp(X) / X, X)
-        ii = np.nonzero(np.abs(r.pol) < 1e-8)[0]
-        assert_allclose(r.res[ii], 1, atol=1e-15)
+        ii = np.nonzero(np.abs(r.poles) < 1e-8)[0]
+        assert_allclose(r.residuals[ii], 1, atol=1e-15)
 
         r = AAA((1 + 1j) * scipy.special.gamma(X), X)
-        ii = np.nonzero(abs(r.pol - (-1)) < 1e-8)
-        assert_allclose(r.res[ii], -1 - 1j, atol=1e-15)
+        ii = np.nonzero(abs(r.poles - (-1)) < 1e-8)
+        assert_allclose(r.residuals[ii], -1 - 1j, atol=1e-15)

@@ -9,13 +9,13 @@ import scipy.sparse
 
 @dataclass
 class _AAAResult:
-    pol: np.ndarray
-    res: np.ndarray
-    zer: np.ndarray
-    zj: np.ndarray
-    fj: np.ndarray
-    wj: np.ndarray
-    errvec: np.ndarray
+    poles: np.ndarray
+    residuals: np.ndarray
+    zeros: np.ndarray
+    support_points: np.ndarray
+    data_values: np.ndarray
+    weights: np.ndarray
+    errors: np.ndarray
 
     def __call__(self, zz) -> np.ndarray:
         # evaluate rational function in barycentric form.
@@ -24,25 +24,25 @@ class _AAAResult:
 
         # Cauchy matrix
         with np.errstate(invalid="ignore", divide="ignore"):
-            CC = 1 / np.subtract.outer(zv, self.zj)
+            CC = 1 / np.subtract.outer(zv, self.support_points)
         # Vector of values
         with np.errstate(invalid="ignore"):
-            r = CC @ (self.wj * self.fj) / (CC @ self.wj)
+            r = CC @ (self.weights * self.data_values) / (CC @ self.weights)
 
         # Deal with input inf: r(inf) = lim r(zz) = sum(w.*f) / sum(w):
-        r[np.isinf(zv)] = np.sum(self.wj * self.fj) / np.sum(self.wj)
+        r[np.isinf(zv)] = np.sum(self.weights * self.data_values) / np.sum(self.weights)
 
         # Deal with NaN:
         ii = np.nonzero(np.isnan(r))[0]
         for jj in ii:
-            if np.isnan(zv[jj]) or not np.any(zv[jj] == self.zj):
+            if np.isnan(zv[jj]) or not np.any(zv[jj] == self.support_points):
                 # r(NaN) = NaN is fine.
                 # The second case may happen if r(zv(ii)) = 0/0 at some point.
                 pass
             else:
                 # Clean up values NaN = inf/inf at support points.
                 # Find the corresponding node and set entry to correct value:
-                r[jj] = self.fj[zv[jj] == self.zj]
+                r[jj] = self.data_values[zv[jj] == self.support_points]
 
         return np.reshape(r, zz.shape)
 

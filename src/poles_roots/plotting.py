@@ -46,15 +46,15 @@ def plot_poles_zeros(
     expected_zeros=None,
 ):
     ax.plot(
-        np.real(result_object.pol),
-        np.imag(result_object.pol),
+        np.real(result_object.poles),
+        np.imag(result_object.poles),
         "rx",
         markersize=8,
         label="Computed Poles",
     )
     ax.plot(
-        np.real(result_object.zer),
-        np.imag(result_object.zer),
+        np.real(result_object.zeros),
+        np.imag(result_object.zeros),
         "gx",
         markersize=8,
         label="Computed Zeros",
