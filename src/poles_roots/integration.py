@@ -1,38 +1,26 @@
-from typing import Optional
+from typing import Optional, Callable
 
 import numpy as np
 import scipy
 
 
 def complex_integration(
-    f: callable,
-    param: callable,
-    param_jac: callable,
+    f: Callable,
+    param: Callable,
+    param_jac: Callable | float,
     limits: tuple[float, float] = (0, 1),
     *,
     quad_kwargs: Optional[dict] = None,
 ) -> complex:
-    """Complex path integration
+    """Complex path integration"""
+    if callable(param_jac):
 
-    Parameters
-    ----------
-    f : callable
-        Integrand
-    param : callable
-        Parametrisation of the path
-    param_jac : callable
-        Derivative of the parametrisation
-    limits : tuple[float, float], optional
-        Limits of integration, by default (0, 1)
+        def _f(t):
+            return f(param(t)) * param_jac(t)
+    else:
 
-    Returns
-    -------
-    complex
-        Value of the integral
-    """
-
-    def _f(t):
-        return f(param(t)) * param_jac(t)
+        def _f(t):
+            return f(param(t)) * param_jac
 
     quad_kwargs = {} if quad_kwargs is None else quad_kwargs
 
@@ -40,10 +28,10 @@ def complex_integration(
 
 
 def argument_principle(
-    f: callable,
-    f_jac: callable,
-    param: callable,
-    param_jac: callable,
+    f: Callable,
+    f_jac: Callable,
+    param: Callable,
+    param_jac: Callable | float,
     limits: tuple[float, float],
     quad_kwargs: Optional[dict] = None,
 ) -> float:

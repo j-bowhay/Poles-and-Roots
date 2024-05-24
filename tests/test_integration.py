@@ -49,7 +49,9 @@ def param_3_jac(t):
     "f,param,param_jac,limits,expected",
     [
         (quadratic, param_1, param_1_jac, (0, 1), (2 / 3) * (-1 + 1j)),
+        (quadratic, param_1, 1 + 1j, (0, 1), (2 / 3) * (-1 + 1j)),
         (trig, param_2, param_2_jac, (-np.pi, np.pi), 23.097479j),
+        (trig, param_2, 1j, (-np.pi, np.pi), 23.097479j),
         (z_inv, param_3, param_3_jac, (0, 2 * np.pi), 2 * np.pi * 1j),
     ],
 )
