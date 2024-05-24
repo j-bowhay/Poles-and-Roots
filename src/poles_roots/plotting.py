@@ -1,5 +1,7 @@
 import numpy as np
 
+from poles_roots.aaa import _AAAResult
+
 
 def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
     theta = -np.pi
@@ -31,3 +33,45 @@ def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
     ax.set_xlabel(r"$\Re$(z)")
     ax.set_ylabel(r"$\Im$(z)")
     return im
+
+
+def plot_poles_zeros(
+    result_object: _AAAResult,
+    ax,
+    /,
+    *,
+    expected_poles=None,
+    expected_zeros=None,
+):
+    ax.plot(
+        np.real(result_object.pol),
+        np.imag(result_object.pol),
+        "rx",
+        markersize=8,
+        label="Computed Poles",
+    )
+    ax.plot(
+        np.real(result_object.zer),
+        np.imag(result_object.zer),
+        "gx",
+        markersize=8,
+        label="Computed Zeros",
+    )
+    if expected_poles is not None:
+        ax.plot(
+            np.real(expected_poles),
+            np.imag(expected_poles),
+            "ro",
+            label="Expected Poles",
+            mfc="none",
+            markersize=11,
+        )
+    if expected_zeros is not None:
+        ax.plot(
+            np.real(expected_zeros),
+            np.imag(expected_zeros),
+            "go",
+            label="Expected Poles",
+            mfc="none",
+            markersize=11,
+        )

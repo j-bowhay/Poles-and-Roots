@@ -8,7 +8,7 @@ import scipy.sparse
 
 
 @dataclass
-class AAAResult:
+class _AAAResult:
     pol: np.ndarray
     res: np.ndarray
     zer: np.ndarray
@@ -60,7 +60,7 @@ def _AAA_iv(F, Z, mmax):
     return F, Z, mmax
 
 
-def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAAResult:
+def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAAResult:
     F, Z, mmax = _AAA_iv(F, Z, mmax)
 
     # Currently we don't handle `F` being callable
@@ -170,7 +170,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAARes
         wj, zj, fj, Z, F = _clean_up(pol, res, wj, zj, fj, Z, F, cleanup_tol)
         pol, res, zer = _prz(zj, fj, wj)
 
-    return AAAResult(pol, res, zer, zj, fj, wj, errvec)
+    return _AAAResult(pol, res, zer, zj, fj, wj, errvec)
 
 
 def _prz(zj, fj, wj):
