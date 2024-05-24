@@ -257,6 +257,7 @@ def _clean_up(pol, res, w, z, f, Z, F, cleanup_tol):
 
     # Solve least-squares problem to obtain weights:
     _, _, V = scipy.linalg.svd(A, full_matrices=False)
+    V = V.conj().T
     w = V[:, m - 1]
 
     return w, z, f, Z, F
