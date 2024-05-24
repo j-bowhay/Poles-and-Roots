@@ -2,7 +2,10 @@ import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 
-from poles_roots.integration import complex_integration, argument_principle
+from poles_roots.integration import (
+    complex_integration,
+    argument_principle_from_parametrisation,
+)
 
 
 def quadratic(z):
@@ -68,6 +71,12 @@ def test_complex_integration(f, param, param_jac, limits, expected):
 )
 def test_argument_principal(f, f_jac, param, param_jac, limits, expected):
     assert_allclose(
-        argument_principle(f, f_jac, param, param_jac, limits=limits),
+        argument_principle_from_parametrisation(
+            f,
+            f_jac,
+            param,
+            param_jac,
+            limits=limits,
+        ),
         expected,
     )

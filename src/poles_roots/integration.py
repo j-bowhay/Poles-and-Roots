@@ -27,7 +27,7 @@ def complex_integration(
     return scipy.integrate.quad(_f, *limits, complex_func=True, **quad_kwargs)[0]
 
 
-def argument_principle(
+def argument_principle_from_parametrisation(
     f: Callable,
     f_jac: Callable,
     param: Callable,
