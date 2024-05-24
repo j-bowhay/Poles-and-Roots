@@ -32,6 +32,8 @@ def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
     )
     ax.set_xlabel(r"$\Re$(z)")
     ax.set_ylabel(r"$\Im$(z)")
+    ax.set_xlim(domain[:2])
+    ax.set_ylim(domain[2:])
     return im
 
 
