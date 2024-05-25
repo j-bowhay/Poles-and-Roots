@@ -5,6 +5,7 @@ from numpy.testing import assert_allclose
 from poles_roots.integration import (
     complex_integration,
     argument_principle_from_parametrisation,
+    argument_principle_from_points,
 )
 
 
@@ -78,5 +79,19 @@ def test_argument_principal(f, f_jac, param, param_jac, limits, expected):
             param_jac,
             limits=limits,
         ),
+        expected,
+    )
+
+
+@pytest.mark.parametrize(
+    "f,f_jac,points,expected",
+    [
+        (z_inv, z_inv_jac, [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j], -1),
+        (lambda z: z, lambda z: 1, [-10 - 10j, 1 - 1j, 20 + 1j, -1 + 1j], 1),
+    ],
+)
+def test_argument_principal_from_points(f, f_jac, points, expected):
+    assert_allclose(
+        argument_principle_from_points(f, f_jac, points),
         expected,
     )

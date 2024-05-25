@@ -47,3 +47,30 @@ def argument_principle_from_parametrisation(
         limits,
         quad_kwargs=quad_kwargs,
     ) / (2 * np.pi * 1j)
+
+
+def argument_principle_from_points(
+    f: Callable,
+    f_jac: Callable,
+    points: np.ndarray,
+    quad_kwargs: Optional[dict] = None,
+) -> complex:
+    res = 0
+    for i, a in enumerate(points):
+        b = np.take(points, i + 1, mode="wrap")
+
+        def param(t):
+            return a * (1 - t) + b * t
+
+        param_jac = b - a
+
+        res += argument_principle_from_parametrisation(
+            f,
+            f_jac,
+            param,
+            param_jac,
+            (0, 1),
+            quad_kwargs=quad_kwargs,
+        )
+
+    return res
