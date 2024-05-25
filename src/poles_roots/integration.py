@@ -74,3 +74,24 @@ def argument_principle_from_points(
         )
 
     return res
+
+
+def argument_priciple_of_triangulation(
+    f,
+    f_jac,
+    points,
+    simplices,
+    quad_kwargs: Optional[dict] = None,
+):
+    result = np.empty(simplices.shape[0], dtype=np.complex128)
+    for i, simplex in enumerate(simplices):
+        simplex_coords = points[simplex].T
+        simplex_points = np.empty(3, dtype=np.complex128)
+        simplex_points.real, simplex_points.imag = simplex_coords
+        result[i] = argument_principle_from_points(
+            f,
+            f_jac,
+            simplex_points,
+            quad_kwargs,
+        )
+    return result
