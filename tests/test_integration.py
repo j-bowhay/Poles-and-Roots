@@ -1,11 +1,13 @@
 import pytest
 import numpy as np
+import scipy
 from numpy.testing import assert_allclose
 
 from poles_roots.integration import (
     complex_integration,
     argument_principle_from_parametrisation,
     argument_principle_from_points,
+    argument_priciple_of_triangulation,
 )
 
 
@@ -95,3 +97,21 @@ def test_argument_principal_from_points(f, f_jac, points, expected):
         argument_principle_from_points(f, f_jac, points),
         expected,
     )
+
+
+def test_argument_principle_from_triangulation():
+    def f(z):
+        return (z - 1) / (z + 1)
+
+    def f_prime(z):
+        return 2 / (z + 1) ** 2
+
+    points = np.array([[0, 1], [0, -1], [5, 0], [-5, 0]])
+
+    tri = scipy.spatial.Delaunay(points)
+
+    z_minus_p = argument_priciple_of_triangulation(
+        f, f_prime, tri.points, tri.simplices
+    )
+
+    assert_allclose(z_minus_p, [-1 + 0j, 1 + 0j])
