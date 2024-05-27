@@ -3,3 +3,4 @@ import poles_roots.reference_problems
 import poles_roots.plotting
 import poles_roots.integration
 import poles_roots.diff
+import poles_roots.triangulation
