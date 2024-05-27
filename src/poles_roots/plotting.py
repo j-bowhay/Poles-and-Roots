@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 from poles_roots.aaa import _AAAResult
 
@@ -77,3 +78,31 @@ def plot_poles_zeros(
             mfc="none",
             markersize=11,
         )
+
+
+def plot_triangulation_with_argument_principle(
+    f,
+    points,
+    simplices,
+    z_minus_p,
+    to_insert=None,
+):
+    fig, ax = plt.subplots()
+    phase_plot(f, ax, domain=[-10, 10, -10, 10])
+    ax.triplot(points[:, 0], points[:, 1], simplices)
+    ax.plot(points[:, 0], points[:, 1], "o")
+
+    for i, simplex in enumerate(simplices):
+        if to_insert is None:
+            color = "g"
+        else:
+            color = "r" if to_insert[i] else "g"
+
+        centre = points[simplex, :].mean(axis=0)
+        ax.text(
+            centre[0],
+            centre[1],
+            f"{np.real(z_minus_p[i]):.1E}",
+            color=color,
+        )
+    return fig, ax

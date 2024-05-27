@@ -4,7 +4,7 @@ import scipy
 import matplotlib.pyplot as plt
 
 from poles_roots.integration import argument_priciple_of_triangulation
-from poles_roots.plotting import phase_plot
+from poles_roots.plotting import plot_triangulation_with_argument_principle
 
 
 def adaptive_triangulation(
@@ -37,20 +37,13 @@ def adaptive_triangulation(
         ),
     ):
         if plot:
-            fig, ax = plt.subplots()
-            phase_plot(f, ax, domain=[-10, 10, -10, 10])
-            ax.triplot(tri.points[:, 0], tri.points[:, 1], tri.simplices)
-            ax.plot(tri.points[:, 0], tri.points[:, 1], "o")
-
-            for i, simplex in enumerate(tri.simplices):
-                color = "r" if to_insert[i] else "g"
-                centre = tri.points[simplex, :].mean(axis=0)
-                ax.text(
-                    centre[0],
-                    centre[1],
-                    f"{np.real(z_minus_p[i]):.1E}",
-                    color=color,
-                )
+            plot_triangulation_with_argument_principle(
+                f,
+                tri.points,
+                tri.simplices,
+                z_minus_p,
+                to_insert,
+            )
             plt.show()
 
         tri.add_points(
@@ -58,6 +51,15 @@ def adaptive_triangulation(
         )
 
     tri.close()
+    if plot:
+        _, ax = plot_triangulation_with_argument_principle(
+            f,
+            tri.points,
+            tri.simplices,
+            z_minus_p,
+        )
+        ax.set_title("Final Triangulation")
+        plt.show()
 
 
 if __name__ == "__main__":
