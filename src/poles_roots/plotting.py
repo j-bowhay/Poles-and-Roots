@@ -86,6 +86,7 @@ def plot_triangulation_with_argument_principle(
     simplices,
     z_minus_p,
     to_insert=None,
+    formatting=".1E",
 ):
     fig, ax = plt.subplots()
     phase_plot(f, ax, domain=[-10, 10, -10, 10])
@@ -102,7 +103,7 @@ def plot_triangulation_with_argument_principle(
         ax.text(
             centre[0],
             centre[1],
-            f"{np.real(z_minus_p[i]):.1E}",
+            f"{np.real(z_minus_p[i]):{formatting}}",
             color=color,
         )
     return fig, ax
