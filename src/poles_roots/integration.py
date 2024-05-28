@@ -3,6 +3,8 @@ from typing import Optional, Callable
 import numpy as np
 import scipy
 
+from poles_roots.utils import convert_cart_to_complex, parametrise_between_two_points
+
 
 def complex_integration(
     f: Callable,
@@ -61,10 +63,7 @@ def argument_principle_from_points(
     for i, a in enumerate(points):
         b = np.take(points, i + 1, mode="wrap")
 
-        def param(t):
-            return a * (1 - t) + b * t
-
-        param_jac = b - a
+        param, param_jac = parametrise_between_two_points(a, b)
 
         res += argument_principle_from_parametrisation(
             f,
@@ -88,9 +87,7 @@ def argument_priciple_of_triangulation(
     """Computes the argument principle around each simplex in a triangulation."""
     result = np.empty(simplices.shape[0], dtype=np.complex128)
     for i, simplex in enumerate(simplices):
-        simplex_coords = points[simplex].T
-        simplex_points = np.empty(3, dtype=np.complex128)
-        simplex_points.real, simplex_points.imag = simplex_coords
+        simplex_points = convert_cart_to_complex(points[simplex])
         result[i] = argument_principle_from_points(
             f,
             f_jac,
