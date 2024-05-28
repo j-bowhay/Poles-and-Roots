@@ -5,6 +5,7 @@ from poles_roots.aaa import _AAAResult
 
 
 def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
+    """Plots the complex phase plane of `f`."""
     theta = -np.pi
     domain = [-1, 1, -1, 1] if domain is None else domain
 
@@ -46,6 +47,7 @@ def plot_poles_zeros(
     expected_poles=None,
     expected_zeros=None,
 ):
+    """Adds the poles and zeros computed by AAA to a plot."""
     ax.plot(
         np.real(result_object.poles),
         np.imag(result_object.poles),
@@ -88,6 +90,8 @@ def plot_triangulation_with_argument_principle(
     to_insert=None,
     formatting=".1E",
 ):
+    """Plots a triangulation with with the argument principle result in the centre of
+    each simplex."""
     fig, ax = plt.subplots()
     phase_plot(f, ax, domain=[-10, 10, -10, 10])
     ax.triplot(points[:, 0], points[:, 1], simplices)

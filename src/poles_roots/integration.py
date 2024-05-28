@@ -35,7 +35,7 @@ def argument_principle_from_parametrisation(
     limits: tuple[float, float],
     quad_kwargs: Optional[dict] = None,
 ) -> float:
-    """Compute the argument principal integral."""
+    """Compute the argument principal integral of a parametrised curve."""
 
     def _f(t):
         return f_jac(t) / f(t)
@@ -55,6 +55,8 @@ def argument_principle_from_points(
     points: np.ndarray,
     quad_kwargs: Optional[dict] = None,
 ) -> complex:
+    """Compute the argument principle of a closed curve defined by line segments between
+    the given points."""
     res = 0
     for i, a in enumerate(points):
         b = np.take(points, i + 1, mode="wrap")
@@ -83,6 +85,7 @@ def argument_priciple_of_triangulation(
     simplices,
     quad_kwargs: Optional[dict] = None,
 ):
+    """Computes the argument principle around each simplex in a triangulation."""
     result = np.empty(simplices.shape[0], dtype=np.complex128)
     for i, simplex in enumerate(simplices):
         simplex_coords = points[simplex].T

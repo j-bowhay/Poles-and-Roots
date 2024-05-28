@@ -9,6 +9,8 @@ import scipy.sparse
 
 @dataclass
 class _AAAResult:
+    """Results object to store the output of the AAA algorithm."""
+
     poles: np.ndarray
     residuals: np.ndarray
     zeros: np.ndarray
@@ -18,6 +20,7 @@ class _AAAResult:
     errors: np.ndarray
 
     def __call__(self, zz) -> np.ndarray:
+        """Evaluate the rational approximation."""
         # evaluate rational function in barycentric form.
         zz = np.asarray(zz)
         zv = np.ravel(zz)
@@ -48,10 +51,11 @@ class _AAAResult:
 
 
 def _AAA_iv(F, Z, mmax):
+    """Input validation for AAA."""
     # Deal with Z and F
     Z = np.ravel(Z)
 
-    # Function values:
+    # Function values
     # Work with column vector and check that it has correct length.
     F = np.ravel(F)
     if F.size != Z.size:
@@ -61,6 +65,7 @@ def _AAA_iv(F, Z, mmax):
 
 
 def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAAResult:
+    """Compute the AAA rational approximation of function values `F` sampled at `Z`"""
     F, Z, mmax = _AAA_iv(F, Z, mmax)
 
     # Currently we don't handle `F` being callable
@@ -174,7 +179,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAARe
 
 
 def _prz(zj, fj, wj):
-    # Compute poles, residues, and zeros of rational fun in barycentric form.
+    """Compute poles, residues, and zeros of rational fun in barycentric form."""
 
     # Compute poles via generalized eigenvalue problem:
     m = wj.size
@@ -207,7 +212,7 @@ def _prz(zj, fj, wj):
 
 
 def _clean_up(pol, res, w, z, f, Z, F, cleanup_tol):
-    # Remove spurious pole-zero pairs.
+    """Remove spurious pole-zero pairs."""
 
     # Find negligible residues:
     if np.any(F):
