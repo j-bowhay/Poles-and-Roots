@@ -11,11 +11,10 @@ def adaptive_triangulation(
     f,
     f_jac,
     initial_points,
-    arg_pricipal_threshold,
+    arg_principal_threshold,
     plot=False,
     quad_kwargs: Optional[dict] = None,
 ):
-    quad_kwargs = {} if quad_kwargs is None else quad_kwargs
     initial_points = np.asarray(initial_points)
     points = np.column_stack([initial_points.real, initial_points.imag])
     tri = scipy.spatial.Delaunay(points, incremental=True)
@@ -33,7 +32,7 @@ def adaptive_triangulation(
                     )
                 ),
             )
-            > arg_pricipal_threshold
+            > arg_principal_threshold
         ),
     ):
         if plot:
@@ -61,6 +60,8 @@ def adaptive_triangulation(
         ax.set_title("Final Triangulation")
         plt.show()
 
+    return tri.points, tri.simplices
+
 
 if __name__ == "__main__":
     from poles_roots.reference_problems import func2, func2_jac
@@ -69,6 +70,6 @@ if __name__ == "__main__":
         func2,
         func2_jac,
         [-9 - 9.2j, 9 - 10j, 9.9 + 9.8j, -9.3 + 9.5j],
-        arg_pricipal_threshold=1.1,
+        arg_principal_threshold=1.1,
         plot=True,
     )
