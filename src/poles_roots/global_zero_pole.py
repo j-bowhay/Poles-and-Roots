@@ -7,8 +7,8 @@ from poles_roots.triangulation import adaptive_triangulation
 from poles_roots.aaa import AAA
 from poles_roots.utils import (
     convert_cart_to_complex,
-    parametrise_between_two_points,
     point_in_triangle,
+    linspace_on_tri,
 )
 
 
@@ -40,9 +40,10 @@ def find_zeros_poles(
     points : array
         Points describing the Jordan curve to search the interior of.
     num_sample_points : int
-        Number of points to sample on each side of the simplex for aaa.
+        Number of points to sample on the boundary of each simplex for aaa.
 
-        TODO: should probably do something more sophisticated accounting for side length etc
+        TODO: should probably do something more sophisticated accounting for the size
+        of the simplex
 
     arg_principal_threshold : float
         Threshold value for Cauchy's argument principle for the adaptive triangulation
@@ -64,17 +65,9 @@ def find_zeros_poles(
     zeros = []
     # apply aaa on each simplex
     for simplex in simplices:
-        simplex_points = convert_cart_to_complex(points[simplex, :])
-
         # generate points on the edge of the simplex
-        z = np.empty(3 * num_sample_points, dtype=np.complex128)
-        for i, a in enumerate(simplex_points):
-            b = np.take(simplex_points, i + 1, mode="wrap")
-
-            param, _ = parametrise_between_two_points(a, b)
-            z[i * num_sample_points : (i + 1) * num_sample_points] = param(
-                np.linspace(0, 1, num=num_sample_points, endpoint=False)
-            )
+        sample_points = linspace_on_tri(points[simplex, :], num_sample_points)
+        z = convert_cart_to_complex(sample_points)
 
         # function values
         F = f(z)

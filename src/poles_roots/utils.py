@@ -39,3 +39,13 @@ def compute_incenter(A, B, C):
     a, b, c = np.linalg.norm([B - C, A - C, A - B], axis=-1)
 
     return (a * A + b * B + c * C) / (a + b + c)
+
+
+def linspace_on_tri(points, num):
+    if points.shape != (3, 2):
+        raise ValueError("`points` must have shape")
+    points = np.vstack([points, points[0, :]])
+    ds = np.linalg.norm(np.diff(points, axis=0), axis=1)
+    s = np.cumsum(np.append(0, ds))
+    b = scipy.interpolate.make_interp_spline(s, points, k=1)
+    return b(np.linspace(0, s[-1], num=num, endpoint=False))
