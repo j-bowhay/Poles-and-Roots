@@ -37,8 +37,10 @@ def adaptive_triangulation(
         ),
     ):
         if plot:
+            fig, ax = plt.subplots()
             plot_triangulation_with_argument_principle(
                 f,
+                ax,
                 tri.points,
                 tri.simplices,
                 z_minus_p,
@@ -56,8 +58,10 @@ def adaptive_triangulation(
 
     tri.close()
     if plot:
-        _, ax = plot_triangulation_with_argument_principle(
+        fig, ax = plt.subplots()
+        plot_triangulation_with_argument_principle(
             f,
+            ax,
             tri.points,
             tri.simplices,
             z_minus_p,
