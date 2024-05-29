@@ -69,7 +69,7 @@ def adaptive_triangulation(
         ax.set_title("Final Triangulation")
         plt.show()
 
-    return tri.points, tri.simplices
+    return tri.points, tri.simplices, z_minus_p
 
 
 if __name__ == "__main__":

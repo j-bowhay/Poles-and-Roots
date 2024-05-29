@@ -56,7 +56,7 @@ def find_zeros_poles(
         _description_
     """
     # triangulate the domain
-    points, simplices = adaptive_triangulation(
+    points, simplices, arg_princ_z_minus_ps = adaptive_triangulation(
         f, f_jac, points, arg_principal_threshold, quad_kwargs
     )
 
@@ -64,7 +64,7 @@ def find_zeros_poles(
     residuals = []
     zeros = []
     # apply aaa on each simplex
-    for simplex in simplices:
+    for simplex, arg_princ_z_minus_p in zip(simplices, arg_princ_z_minus_ps):
         # generate points on the edge of the simplex
         sample_points = linspace_on_tri(points[simplex, :], num_sample_points)
         z = convert_cart_to_complex(sample_points)
@@ -77,14 +77,21 @@ def find_zeros_poles(
         # only report zeros and poles that are within the simplex
         A, B, C = points[simplex, :]
 
+        aaa_z_minus_p = 0
         for pole, residual in zip(aaa_res.poles, aaa_res.residuals):
             if point_in_triangle(np.array([pole.real, pole.imag]), A, B, C):
                 poles.append(pole)
                 residuals.append(residual)
+                aaa_z_minus_p -= 1
 
         for zero in aaa_res.zeros:
             if point_in_triangle(np.array([zero.real, zero.imag]), A, B, C):
                 zeros.append(zero)
+                aaa_z_minus_p += 1
+
+        if not np.allclose(arg_princ_z_minus_p, aaa_z_minus_p):
+            print(f"{aaa_z_minus_p=}, {arg_princ_z_minus_p=}")
+            # TODO: do further refinement
 
     return _ZerosPolesResult(
         zeros=np.asarray(zeros),
