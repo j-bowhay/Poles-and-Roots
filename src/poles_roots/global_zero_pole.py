@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable
 
 import numpy as np
@@ -14,10 +14,10 @@ from poles_roots.utils import (
 
 @dataclass
 class _ZerosPolesResult:
+    zeros: np.ndarray
+    poles: np.ndarray
     points: np.ndarray
     simplices: np.ndarray
-    zeros: np.ndarray = field(default_factory=lambda: np.array([]))
-    poles: np.ndarray = field(default_factory=lambda: np.array([]))
 
 
 def find_zeros_poles(
@@ -58,7 +58,8 @@ def find_zeros_poles(
         f, f_jac, points, arg_principal_threshold, quad_kwargs
     )
 
-    res = _ZerosPolesResult(points=points, simplices=simplices)
+    poles = []
+    zeros = []
     # apply aaa on each simplex
     for simplex in simplices:
         simplex_points = convert_cart_to_complex(points[simplex, :])
@@ -83,13 +84,18 @@ def find_zeros_poles(
 
         for pole in aaa_res.poles:
             if point_in_triangle(np.array([pole.real, pole.imag]), A, B, C):
-                res.poles = np.append(res.poles, pole)
+                poles.append(pole)
 
         for zero in aaa_res.zeros:
             if point_in_triangle(np.array([zero.real, zero.imag]), A, B, C):
-                res.zeros = np.append(res.zeros, zero)
+                zeros.append(zero)
 
-    return res
+    return _ZerosPolesResult(
+        zeros=np.asarray(zeros),
+        poles=np.asarray(poles),
+        points=points,
+        simplices=simplices,
+    )
 
 
 if __name__ == "__main__":
