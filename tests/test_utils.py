@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.testing import assert_equal
+from numpy.testing import assert_equal, assert_allclose
 
 from poles_roots.utils import (
     convert_cart_to_complex,
@@ -38,7 +38,9 @@ def test_point_in_triangle():
 
 
 def test_compute_incenter():
-    assert_equal(
+    assert_allclose(
         compute_incenter(np.array([3, 1]), np.array([0, 3]), np.array([-3, 1])),
-        np.array([0, (2 + np.sqrt(13)) / (6 + 2 * np.sqrt(13))]),
+        np.array([0, (2 * np.sqrt(13) + 18) / (6 + 2 * np.sqrt(13))]),
+        atol=1e-12,
+        rtol=1e-12,
     )

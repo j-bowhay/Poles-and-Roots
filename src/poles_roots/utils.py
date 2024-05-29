@@ -36,8 +36,6 @@ def point_in_triangle(point, A, B, C):
 
 def compute_incenter(A, B, C):
     """Compute the incenter of triangle ABC."""
-    a = np.linalg.norm(B - C)
-    b = np.linalg.norm(A - C)
-    c = np.linalg.norm(A - B)
+    a, b, c = np.linalg.norm([B - C, A - C, A - B], axis=-1)
 
     return (a * A + b * B + c * C) / (a + b + c)
