@@ -90,33 +90,15 @@ def find_zeros_poles(
                 aaa_z_minus_p += 1
 
         if not np.allclose(arg_princ_z_minus_p, aaa_z_minus_p):
-            print(f"{aaa_z_minus_p=}, {arg_princ_z_minus_p=}")
+            print(
+                f"AAA and argument principle don't match: {aaa_z_minus_p=}, {arg_princ_z_minus_p=}"
+            )
             # TODO: do further refinement
 
     return _ZerosPolesResult(
         zeros=np.asarray(zeros),
         poles=np.asarray(poles),
-        residuals=np.asarray(residual),
+        residuals=np.asarray(residuals),
         points=points,
         simplices=simplices,
     )
-
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    from poles_roots.reference_problems import func2, func2_jac
-    from poles_roots.plotting import phase_plot, plot_poles_zeros
-
-    res = find_zeros_poles(
-        func2,
-        func2_jac,
-        points=[-9 - 9.2j, 9 - 10j, 9.9 + 9.8j, -9.3 + 9.5j],
-        arg_principal_threshold=1.1,
-        num_sample_points=50,
-    )
-
-    fig, ax = plt.subplots()
-    phase_plot(func2, ax, domain=[-10, 10, -10, 10])
-    plot_poles_zeros(res, ax)
-    ax.legend()
-    plt.show()
