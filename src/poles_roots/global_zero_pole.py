@@ -16,6 +16,7 @@ from poles_roots.utils import (
 class _ZerosPolesResult:
     zeros: np.ndarray
     poles: np.ndarray
+    residuals: np.ndarray
     points: np.ndarray
     simplices: np.ndarray
 
@@ -59,6 +60,7 @@ def find_zeros_poles(
     )
 
     poles = []
+    residuals = []
     zeros = []
     # apply aaa on each simplex
     for simplex in simplices:
@@ -82,9 +84,10 @@ def find_zeros_poles(
         # only report zeros and poles that are within the simplex
         A, B, C = points[simplex, :]
 
-        for pole in aaa_res.poles:
+        for pole, residual in zip(aaa_res.poles, aaa_res.residuals):
             if point_in_triangle(np.array([pole.real, pole.imag]), A, B, C):
                 poles.append(pole)
+                residuals.append(residual)
 
         for zero in aaa_res.zeros:
             if point_in_triangle(np.array([zero.real, zero.imag]), A, B, C):
@@ -93,6 +96,7 @@ def find_zeros_poles(
     return _ZerosPolesResult(
         zeros=np.asarray(zeros),
         poles=np.asarray(poles),
+        residuals=np.asarray(residual),
         points=points,
         simplices=simplices,
     )
