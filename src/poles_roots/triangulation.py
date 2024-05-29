@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from poles_roots.integration import argument_priciple_of_triangulation
 from poles_roots.plotting import plot_triangulation_with_argument_principle
+from poles_roots.utils import compute_incenter
 
 
 def adaptive_triangulation(
@@ -45,9 +46,13 @@ def adaptive_triangulation(
             )
             plt.show()
 
-        tri.add_points(
-            tri.points[tri.simplices[np.nonzero(to_insert)[0]], :].mean(axis=1),
-        )
+        # compute the points to be added to the triangulation
+        insert_index = np.nonzero(to_insert)[0]
+        points_to_add = np.empty((insert_index.size, 2))
+        for i, simplex in enumerate(tri.simplices[insert_index]):
+            A, B, C = tri.points[simplex, :]
+            points_to_add[i, :] = compute_incenter(A, B, C)
+        tri.add_points(points_to_add)
 
     tri.close()
     if plot:
