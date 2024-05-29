@@ -5,6 +5,7 @@ from poles_roots.utils import (
     convert_cart_to_complex,
     parametrise_between_two_points,
     point_in_triangle,
+    compute_incenter,
 )
 
 
@@ -33,4 +34,11 @@ def test_point_in_triangle():
     )
     assert not point_in_triangle(
         np.array([1, 1]), np.array([0, 0]), np.array([1, 0]), np.array([0, 1])
+    )
+
+
+def test_compute_incenter():
+    assert_equal(
+        compute_incenter(np.array([3, 1]), np.array([0, 3]), np.array([-3, 1])),
+        np.array([0, (2 + np.sqrt(13)) / (6 + 2 * np.sqrt(13))]),
     )

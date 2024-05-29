@@ -32,3 +32,12 @@ def point_in_triangle(point, A, B, C):
     u, v = scipy.linalg.solve(lhs, rhs)
 
     return u > 0 and v > 0 and 1 - u - v > 0
+
+
+def compute_incenter(A, B, C):
+    """Compute the incenter of triangle ABC."""
+    a = np.linalg.norm(B - C)
+    b = np.linalg.norm(A - C)
+    c = np.linalg.norm(A - B)
+
+    return (a * A + b * B + c * C) / (a + b + c)
