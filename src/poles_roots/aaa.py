@@ -82,7 +82,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAARe
     M = np.size(Z)
     # absolute tolerance
     abstol = tol * np.linalg.norm(F, ord=np.inf)
-    J = np.arange(M)
+    mask = np.ones(M, dtype=np.bool_)
     zj = np.empty(mmax, dtype=np.complex128)
     fj = np.empty(mmax, dtype=np.complex128)
     # Cauchy matrix
@@ -90,41 +90,40 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAARe
     # Loewner matrix
     A = np.empty((M, mmax), dtype=np.complex128)
     errvec = np.empty(mmax, dtype=np.complex128)
-    R = np.mean(F) * np.ones_like(J)
+    R = np.mean(F) * np.ones_like(mask)
 
     # AAA iteration
     for m in range(mmax):
         # Introduce next support point
         # Select next support point
-        jj = np.argmax(np.abs(F[J] - R[J]))
+        jj = np.argmax(np.abs(F[mask] - R[mask]))
         # Update support points
-        zj[m] = Z[J[jj]]
+        zj[m] = Z[mask][jj]
         # Update data values
-        fj[m] = F[J[jj]]
-        # Next column of Cauchy matrix
+        fj[m] = F[mask][jj]
+        # Next column of Cauchy matrixj
         with np.errstate(divide="ignore", invalid="ignore"):
-            C[:, m] = 1 / (Z - Z[J[jj]])
-        # Update index vector
-        # TODO: switch to boolean mask once happy with everything else
-        J = np.delete(J, jj)
+            C[:, m] = 1 / (Z - Z[mask][jj])
+        # Update mask
+        mask[np.flatnonzero(mask)[jj]] = False
         # Update Loewner matrix
         with np.errstate(invalid="ignore"):
             A[:, m] = (F - fj[m]) * C[:, m]
 
         # Compute weights:
         # The usual tall-skinny case
-        if J.size >= m + 1:
+        if mask.sum() >= m + 1:
             # Reduced SVD
-            _, s, V = scipy.linalg.svd(A[J, : m + 1], full_matrices=False)
+            _, s, V = scipy.linalg.svd(A[mask, : m + 1], full_matrices=False)
             V = V.conj().T
             # Treat case of multiple min sing val
             mm = np.nonzero(s == np.min(s))[0]
             nm = mm.size
             # Aim for non-sparse wt vector
             wj = V[:, mm] @ np.ones(nm) / np.sqrt(nm)
-        elif J.size >= 1:
+        elif mask.sum() >= 1:
             # Fewer rows than columns
-            V = scipy.linalg.null_space(A[J, : m + 1])
+            V = scipy.linalg.null_space(A[mask, : m + 1])
             nm = V.shape[-1]
             # Aim for non-sparse wt vector
             wj = V @ np.ones(nm) / np.sqrt(nm)
