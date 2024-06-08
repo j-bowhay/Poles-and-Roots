@@ -36,7 +36,7 @@ class _AAAResult:
         r[np.isinf(zv)] = np.sum(self.weights * self.data_values) / np.sum(self.weights)
 
         # Deal with NaN:
-        ii = np.nonzero(np.isnan(r))[0]
+        ii = np.flatnonzero(np.isnan(r))
         for jj in ii:
             if np.isnan(zv[jj]) or not np.any(zv[jj] == self.support_points):
                 # r(NaN) = NaN is fine.
@@ -133,7 +133,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAARe
 
         # Compute rational approximant:
         # Omit columns with wj = 0
-        i0 = np.nonzero(wj)[0]
+        i0 = np.flatnonzero(wj)
         with np.errstate(invalid="ignore"):
             # Numerator
             N = C[:, : m + 1][:, i0] @ (wj[i0] * fj[: m + 1][i0])
@@ -162,7 +162,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAARe
     errvec = errvec[: m + 1]
 
     # Remove support points with zero weight:
-    i_non_zero = np.nonzero(wj)[0]
+    i_non_zero = np.flatnonzero(wj)
     zj = zj[i_non_zero]
     wj = wj[i_non_zero]
     fj = fj[i_non_zero]
