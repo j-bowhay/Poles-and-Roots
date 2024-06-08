@@ -30,7 +30,7 @@ def adaptive_triangulation(
                         tri.points,
                         tri.simplices,
                         quad_kwargs,
-                    )
+                    )[0]
                 ),
             )
             > arg_principal_threshold
@@ -74,8 +74,8 @@ def adaptive_triangulation(
 
 if __name__ == "__main__":
     adaptive_triangulation(
-        lambda z: 1 / ((z - 0.5) * (z - 2)),
-        lambda z: -(2 * (-1.25 + z)) / ((-2 + z) ** 2 * (-0.5 + z) ** 2),
+        lambda z: 1 / z,
+        lambda z: -1 / z**2,
         [-5 - 5j, 5 - 5j, 5 + 5j, -5 + 5j],
         arg_principal_threshold=1.1,
         plot=True,

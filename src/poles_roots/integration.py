@@ -59,13 +59,14 @@ def argument_principle_from_points(
 ) -> complex:
     """Compute the argument principle of a closed curve defined by line segments between
     the given points."""
+    inf_edges = set()
     res = 0
     for i, a in enumerate(points):
         b = np.take(points, i + 1, mode="wrap")
 
         param, param_jac = parametrise_between_two_points(a, b)
 
-        res += argument_principle_from_parametrisation(
+        edge_res = argument_principle_from_parametrisation(
             f,
             f_jac,
             param,
@@ -73,8 +74,11 @@ def argument_principle_from_points(
             (0, 1),
             quad_kwargs=quad_kwargs,
         )
+        res += edge_res
+        if np.isnan(edge_res) or np.isinf(edge_res):
+            inf_edges.add(frozenset((a, b)))
 
-    return res
+    return res, inf_edges
 
 
 def argument_priciple_of_triangulation(
@@ -86,12 +90,15 @@ def argument_priciple_of_triangulation(
 ):
     """Computes the argument principle around each simplex in a triangulation."""
     result = np.empty(simplices.shape[0], dtype=np.complex128)
+    inf_edges_global = set()
     for i, simplex in enumerate(simplices):
         simplex_points = convert_cart_to_complex(points[simplex])
-        result[i] = argument_principle_from_points(
+        res, inf_edges = argument_principle_from_points(
             f,
             f_jac,
             simplex_points,
             quad_kwargs,
         )
-    return result
+        result[i] = res
+        inf_edges_global.update(inf_edges)
+    return result, inf_edges_global

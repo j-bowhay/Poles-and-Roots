@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import scipy
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_equal
 
 from poles_roots.integration import (
     complex_integration,
@@ -85,33 +85,56 @@ def test_argument_principal(f, f_jac, param, param_jac, limits, expected):
     )
 
 
-@pytest.mark.parametrize(
-    "f,f_jac,points,expected",
-    [
-        (z_inv, z_inv_jac, [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j], -1),
-        (lambda z: z, lambda z: 1, [-10 - 10j, 1 - 1j, 20 + 1j, -1 + 1j], 1),
-    ],
-)
-def test_argument_principal_from_points(f, f_jac, points, expected):
-    assert_allclose(
-        argument_principle_from_points(f, f_jac, points),
-        expected,
+class TestArgumentPrincipleFromPoints:
+    @pytest.mark.parametrize(
+        "f,f_jac,points,expected",
+        [
+            (z_inv, z_inv_jac, [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j], -1),
+            (lambda z: z, lambda z: 1, [-10 - 10j, 1 - 1j, 20 + 1j, -1 + 1j], 1),
+        ],
     )
+    def test_finite(self, f, f_jac, points, expected):
+        res, inf_edges = argument_principle_from_points(f, f_jac, points)
+        assert_allclose(res, expected)
+        assert_equal(inf_edges, set())
 
-
-def test_argument_principle_from_triangulation():
-    def f(z):
-        return (z - 1) / (z + 1)
-
-    def f_prime(z):
-        return 2 / (z + 1) ** 2
-
-    points = np.array([[0, 1], [0, -1], [5, 0], [-5, 0]])
-
-    tri = scipy.spatial.Delaunay(points)
-
-    z_minus_p = argument_priciple_of_triangulation(
-        f, f_prime, tri.points, tri.simplices
+    @pytest.mark.parametrize(
+        "f,f_jac,points",
+        [
+            (z_inv, z_inv_jac, [-1, 1, 1j]),
+        ],
     )
+    def test_poles(self, f, f_jac, points):
+        _, inf_edges = argument_principle_from_points(f, f_jac, points)
+        assert_equal(inf_edges, {frozenset((-1, 1))})
 
-    assert_allclose(z_minus_p, [-1 + 0j, 1 + 0j])
+
+class TestArgumentPrincipleFromTriangulation:
+    def test_no_poles_on_diagonal(self):
+        def f(z):
+            return (z - 1) / (z + 1)
+
+        def f_prime(z):
+            return 2 / (z + 1) ** 2
+
+        points = np.array([[0, 1], [0, -1], [5, 0], [-5, 0]])
+
+        tri = scipy.spatial.Delaunay(points)
+
+        z_minus_p, inf_diags = argument_priciple_of_triangulation(
+            f, f_prime, tri.points, tri.simplices
+        )
+
+        assert_allclose(z_minus_p, [-1 + 0j, 1 + 0j])
+        assert_equal(inf_diags, set())
+
+    def test_pole_on_diagonal(self):
+        points = np.array([[-1, -1], [1, -1], [1, 1], [-1, 1]])
+
+        tri = scipy.spatial.Delaunay(points)
+
+        z_minus_p, inf_diags = argument_priciple_of_triangulation(
+            z_inv, z_inv_jac, tri.points, tri.simplices
+        )
+
+        assert_equal(inf_diags, {frozenset({(-1 + 1j), (1 - 1j)})})
