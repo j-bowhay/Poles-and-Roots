@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from poles_roots.integration import argument_priciple_of_triangulation
 from poles_roots.plotting import plot_triangulation_with_argument_principle
-from poles_roots.utils import compute_incenter
+from poles_roots._utils import compute_incenter
 
 
 def adaptive_triangulation(

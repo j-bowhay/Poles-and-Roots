@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.testing import assert_equal, assert_allclose
 
-from poles_roots.utils import (
+from poles_roots._utils import (
     convert_cart_to_complex,
     parametrise_between_two_points,
     point_in_triangle,

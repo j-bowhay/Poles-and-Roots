@@ -3,7 +3,7 @@ from typing import Optional, Callable
 import numpy as np
 import scipy
 
-from poles_roots.utils import convert_cart_to_complex, parametrise_between_two_points
+from poles_roots._utils import convert_cart_to_complex, parametrise_between_two_points
 
 
 def complex_integration(
