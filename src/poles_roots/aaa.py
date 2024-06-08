@@ -74,8 +74,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAARe
     to_keep = (np.isfinite(F)) & (~np.isnan(F))
     F = F[to_keep]
     Z = Z[to_keep]
-    _, uni = np.unique(Z, return_index=True)
-    Z = Z[uni]
+    Z, uni = np.unique(Z, return_index=True)
     F = F[uni]
 
     # Initialization for AAA iteration:
