@@ -18,7 +18,7 @@ def adaptive_triangulation(
 ):
     initial_points = np.asarray(initial_points)
     points = np.column_stack([initial_points.real, initial_points.imag])
-    tri = scipy.spatial.Delaunay(points, incremental=True)
+    tri = scipy.spatial.Delaunay(points)
 
     while np.any(
         (
@@ -54,9 +54,9 @@ def adaptive_triangulation(
         for i, simplex in enumerate(tri.simplices[insert_index]):
             A, B, C = tri.points[simplex, :]
             points_to_add[i, :] = compute_incenter(A, B, C)
-        tri.add_points(points_to_add)
+        points = np.concatenate([points, points_to_add])
+        tri = scipy.spatial.Delaunay(points)
 
-    tri.close()
     if plot:
         fig, ax = plt.subplots()
         plot_triangulation_with_argument_principle(
@@ -73,12 +73,10 @@ def adaptive_triangulation(
 
 
 if __name__ == "__main__":
-    from poles_roots.reference_problems import func2, func2_jac
-
     adaptive_triangulation(
-        func2,
-        func2_jac,
-        [-9 - 9.2j, 9 - 10j, 9.9 + 9.8j, -9.3 + 9.5j],
+        lambda z: 1 / ((z - 0.5) * (z - 2)),
+        lambda z: -(2 * (-1.25 + z)) / ((-2 + z) ** 2 * (-0.5 + z) ** 2),
+        [-5 - 5j, 5 - 5j, 5 + 5j, -5 + 5j],
         arg_principal_threshold=1.1,
         plot=True,
     )
