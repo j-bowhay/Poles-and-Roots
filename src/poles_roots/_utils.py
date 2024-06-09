@@ -57,12 +57,29 @@ def area_2(a, b, c):
 
 
 def left(point, a, b):
+    """Determine if point is to the left of the line ab"""
     return area_2(a, b, point) > 0
 
 
 def left_on(point, a, b):
+    """Determine if point is to the left of or on the line ab"""
     return area_2(a, b, point) >= 0
 
 
 def collinear(point, a, b):
+    """Determine if point is on the line ab"""
     return area_2(a, b, point) == 0
+
+
+def point_in_polygon(point, points, on=True):
+    """Determine if point in the convex polygon defined by points"""
+    for i, a in enumerate(points):
+        b = np.take(points, i + 1, axis=0, mode="wrap")
+
+        if on:
+            if not left_on(point, a, b):
+                return False
+        else:
+            if not left(point, a, b):
+                return False
+    return True

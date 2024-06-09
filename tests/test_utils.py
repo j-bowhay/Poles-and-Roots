@@ -10,6 +10,7 @@ from poles_roots._utils import (
     left,
     left_on,
     collinear,
+    point_in_polygon,
 )
 
 
@@ -70,3 +71,11 @@ def test_collinear():
     assert not collinear([0, 1], [0, 0], [1, 0])
     assert not collinear([0, -1], [0, 0], [1, 0])
     assert collinear([0.5, 0], [0, 0], [1, 0])
+
+
+def test_point_in_polygon():
+    assert point_in_polygon([0.5, 0.5], [[0, 0], [1, 0], [1, 1], [0, 1]])
+    assert not point_in_polygon([1.5, 0.5], [[0, 0], [1, 0], [1, 1], [0, 1]])
+    assert point_in_polygon([0.1, 0.1], [[0, 0], [1, 0], [0, 1]])
+    assert not point_in_polygon([-0.1, 0.1], [[0, 0], [1, 0], [0, 1]])
+    assert not point_in_polygon([1, 1], [[0, 0], [1, 0], [0, 1]])
