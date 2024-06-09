@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from poles_roots.integration import argument_priciple_of_triangulation
 from poles_roots.plotting import plot_triangulation_with_argument_principle
-from poles_roots._utils import compute_incenter
+from poles_roots._utils import compute_incenter, point_in_polygon
 
 
 def adaptive_triangulation(
@@ -57,10 +57,10 @@ def adaptive_triangulation(
                     r = radius * np.sqrt(rng.random())
                     theta = rng.uniform(0, 2 * np.pi)
                     new = center + r * np.exp(theta * 1j)
-                    # check if in convex hull here
-                    acceptable_point = True
-                points_to_add[i, :] = [new.real, new.imag]
-
+                    point = [new.real, new.imag]
+                    if point_in_polygon(point, tri.points[np.unique(tri.convex_hull)]):
+                        acceptable_point = True
+                points_to_add[i, :] = point
         else:
             # compute the points to be added to the triangulation
             insert_index = np.flatnonzero(to_insert)
