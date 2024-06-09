@@ -6,6 +6,7 @@ from poles_roots._utils import (
     parametrise_between_two_points,
     point_in_triangle,
     compute_incenter,
+    area_2,
 )
 
 
@@ -44,3 +45,7 @@ def test_compute_incenter():
         atol=1e-12,
         rtol=1e-12,
     )
+
+
+def test_area_2():
+    assert_allclose(area_2([5, 3], [0, 10], [1, -1]), 2 * 24)

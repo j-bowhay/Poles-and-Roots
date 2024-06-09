@@ -49,3 +49,8 @@ def linspace_on_tri(points, num):
     s = np.cumsum(np.append(0, ds))
     b = scipy.interpolate.make_interp_spline(s, points, k=1)
     return b(np.linspace(0, s[-1], num=num, endpoint=False))
+
+
+def area_2(a, b, c):
+    """Compute twice the area of a triangle"""
+    return (b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1])
