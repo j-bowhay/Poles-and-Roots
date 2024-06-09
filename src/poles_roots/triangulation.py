@@ -47,14 +47,18 @@ def adaptive_triangulation(
             plt.show()
 
         if to_destroy:
-            # destroy edge if we are integrating through a singularity
+            # destroy edge if we are integrating through a pole
             points_to_add = np.empty((len(to_destroy), 2))
             for i, (a, b) in enumerate(to_destroy):
-                center = (a + b) / 2
-                radius = np.abs(a - b) / 2
-                r = radius * np.sqrt(rng.random())
-                theta = rng.uniform(0, 2 * np.pi)
-                new = center + r * np.exp(theta * 1j)
+                acceptable_point = False
+                while not acceptable_point:
+                    center = (a + b) / 2
+                    radius = np.abs(a - b) / 2
+                    r = radius * np.sqrt(rng.random())
+                    theta = rng.uniform(0, 2 * np.pi)
+                    new = center + r * np.exp(theta * 1j)
+                    # check if in convex hull here
+                    acceptable_point = True
                 points_to_add[i, :] = [new.real, new.imag]
 
         else:

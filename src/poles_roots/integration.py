@@ -75,6 +75,7 @@ def argument_principle_from_points(
             quad_kwargs=quad_kwargs,
         )
         res += edge_res
+        # if the integration hasn't worked we'll need to destroy this edge
         if np.isnan(edge_res) or np.isinf(edge_res):
             inf_edges.add(frozenset((a, b)))
 
@@ -100,5 +101,6 @@ def argument_priciple_of_triangulation(
             quad_kwargs,
         )
         result[i] = res
+        # keep track of the edges that we are going to destroy
         inf_edges_global.update(inf_edges)
     return result, inf_edges_global
