@@ -19,23 +19,15 @@ def adaptive_triangulation(
     initial_points = np.asarray(initial_points)
     points = np.column_stack([initial_points.real, initial_points.imag])
     tri = scipy.spatial.Delaunay(points)
+    z_minus_p, to_destroy = argument_priciple_of_triangulation(
+        f,
+        f_jac,
+        tri.points,
+        tri.simplices,
+        quad_kwargs,
+    )
 
-    while np.any(
-        (
-            to_insert := np.abs(
-                (
-                    z_minus_p := argument_priciple_of_triangulation(
-                        f,
-                        f_jac,
-                        tri.points,
-                        tri.simplices,
-                        quad_kwargs,
-                    )[0]
-                ),
-            )
-            > arg_principal_threshold
-        ),
-    ):
+    while to_insert := np.any(np.abs(z_minus_p) > arg_principal_threshold):
         if plot:
             fig, ax = plt.subplots()
             plot_triangulation_with_argument_principle(
@@ -56,6 +48,15 @@ def adaptive_triangulation(
             points_to_add[i, :] = compute_incenter(A, B, C)
         points = np.concatenate([points, points_to_add])
         tri = scipy.spatial.Delaunay(points)
+
+        # recompute the argument principle
+        z_minus_p, to_destroy = argument_priciple_of_triangulation(
+            f,
+            f_jac,
+            tri.points,
+            tri.simplices,
+            quad_kwargs,
+        )
 
     if plot:
         fig, ax = plt.subplots()
