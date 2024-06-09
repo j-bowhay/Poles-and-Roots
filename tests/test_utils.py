@@ -7,6 +7,9 @@ from poles_roots._utils import (
     point_in_triangle,
     compute_incenter,
     area_2,
+    left,
+    left_on,
+    collinear,
 )
 
 
@@ -49,3 +52,21 @@ def test_compute_incenter():
 
 def test_area_2():
     assert_allclose(area_2([5, 3], [0, 10], [1, -1]), 2 * 24)
+
+
+def test_left():
+    assert left([0, 1], [0, 0], [1, 0])
+    assert not left([0, -1], [0, 0], [1, 0])
+    assert not left([0.5, 0], [0, 0], [1, 0])
+
+
+def test_left_on():
+    assert left_on([0, 1], [0, 0], [1, 0])
+    assert not left_on([0, -1], [0, 0], [1, 0])
+    assert left_on([0.5, 0], [0, 0], [1, 0])
+
+
+def test_collinear():
+    assert not collinear([0, 1], [0, 0], [1, 0])
+    assert not collinear([0, -1], [0, 0], [1, 0])
+    assert collinear([0.5, 0], [0, 0], [1, 0])

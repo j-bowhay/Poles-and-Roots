@@ -54,3 +54,15 @@ def linspace_on_tri(points, num):
 def area_2(a, b, c):
     """Compute twice the area of a triangle"""
     return (b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1])
+
+
+def left(point, a, b):
+    return area_2(a, b, point) > 0
+
+
+def left_on(point, a, b):
+    return area_2(a, b, point) >= 0
+
+
+def collinear(point, a, b):
+    return area_2(a, b, point) == 0
