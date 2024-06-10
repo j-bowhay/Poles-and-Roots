@@ -26,7 +26,9 @@ def complex_integration(
 
     quad_kwargs = {} if quad_kwargs is None else quad_kwargs
 
-    return scipy.integrate.quad(_f, *limits, complex_func=True, **quad_kwargs)[0]
+    return scipy.integrate.quad(
+        _f, *limits, complex_func=True, full_output=True, **quad_kwargs
+    )[0]
 
 
 def argument_principle_from_parametrisation(
@@ -40,7 +42,8 @@ def argument_principle_from_parametrisation(
     """Compute the argument principal integral of a parametrised curve."""
 
     def _f(t):
-        return f_jac(t) / f(t)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            return f_jac(t) / f(t)
 
     return complex_integration(
         _f,
