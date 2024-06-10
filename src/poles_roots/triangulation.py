@@ -50,6 +50,15 @@ def adaptive_triangulation(
             # destroy edge if we are integrating through a pole
             points_to_add = np.empty((len(to_destroy), 2))
             for i, (a, b) in enumerate(to_destroy):
+                hull = scipy.spatial.ConvexHull(tri.points)
+                # before doing anything check the edge to destroy is in the convex hull
+                edge = np.array([[a.real, a.imag], [b.real, b.imag]])
+                hull_points = tri.points[hull.vertices, :]
+                for j, first_point in enumerate(hull_points):
+                    second_point = np.take(hull_points, j + 1, axis=0, mode="wrap")
+                    if np.all(edge == np.stack([first_point, second_point])):
+                        raise ValueError("Pole/Zero detected on the convex hull.")
+
                 acceptable_point = False
                 while not acceptable_point:
                     center = (a + b) / 2
@@ -58,7 +67,7 @@ def adaptive_triangulation(
                     theta = rng.uniform(0, 2 * np.pi)
                     new = center + r * np.exp(theta * 1j)
                     point = [new.real, new.imag]
-                    if point_in_polygon(point, tri.points[np.unique(tri.convex_hull)]):
+                    if point_in_polygon(point, tri.points[hull.vertices, :]):
                         acceptable_point = True
                 points_to_add[i, :] = point
         else:
@@ -102,7 +111,7 @@ if __name__ == "__main__":
     adaptive_triangulation(
         lambda z: 1 / z,
         lambda z: -1 / z**2,
-        [-5 - 5j, 5 - 5j, 5 + 5j, -5 + 5j],
+        [-5 + 5j, 5 + 5j, 5 - 5j, -5 - 5j],
         arg_principal_threshold=1.1,
         plot=True,
     )
