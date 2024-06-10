@@ -38,22 +38,22 @@ def func3_jac(z):
 
 
 def func4(z):
-    return (
-        z
-        * z
-        * np.square(z - 2)
-        * (z * z * z + np.exp(2 * z) * np.cos(z) - np.sin(z) - 1)
-    )
+    return z**2 * (z - 2) ** 2 * (z**3 + np.exp(2 * z) * np.cos(z) - np.sin(z) - 1)
 
 
 def func4_jac(z):
-    return z * (z - 2) * (
-        7 * z * z * z * z
-        - 10 * z * z * z
-        - 4 * z
-        + 4
-        + (2 * (z * z - 2) * np.exp(2 * z) - z * (z - 2)) * np.cos(z)
-    ) + (-z * (z - 2) * np.exp(2 * z) - 4 * z + 4) * np.sin(z)
+    return (
+        z**2
+        * (z - 2) ** 2
+        * (
+            3 * z**2
+            - np.exp(2 * z) * np.sin(z)
+            + 2 * np.exp(2 * z) * np.cos(z)
+            - np.cos(z)
+        )
+        + z**2 * (2 * z - 4) * (z**3 + np.exp(2 * z) * np.cos(z) - np.sin(z) - 1)
+        + 2 * z * (z - 2) ** 2 * (z**3 + np.exp(2 * z) * np.cos(z) - np.sin(z) - 1)
+    )
 
 
 def func5(z):
