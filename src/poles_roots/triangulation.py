@@ -56,7 +56,9 @@ def adaptive_triangulation(
                 hull_points = tri.points[hull.vertices, :]
                 for j, first_point in enumerate(hull_points):
                     second_point = np.take(hull_points, j + 1, axis=0, mode="wrap")
-                    if np.all(edge == np.stack([first_point, second_point])):
+                    if np.all(edge == np.stack([first_point, second_point])) or np.all(
+                        edge == np.stack([second_point, first_point])
+                    ):
                         raise ValueError("Pole/Zero detected on the convex hull.")
 
                 acceptable_point = False
@@ -109,9 +111,9 @@ def adaptive_triangulation(
 
 if __name__ == "__main__":
     adaptive_triangulation(
-        lambda z: 1 / z,
-        lambda z: -1 / z**2,
-        [-5 + 5j, 5 + 5j, 5 - 5j, -5 - 5j],
+        lambda z: z,
+        lambda z: 1,
+        [-5, 5, 5 - 5j, -5 - 5j],
         arg_principal_threshold=1.1,
         plot=True,
     )

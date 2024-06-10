@@ -78,8 +78,24 @@ def argument_principle_from_points(
             quad_kwargs=quad_kwargs,
         )
         res += edge_res
+
+        # also integrate 1/f to detect a zero on the edge
+        with np.errstate(divide="ignore", invalid="ignore"):
+            reciprocal = complex_integration(
+                lambda z: 1 / f(z),
+                param=param,
+                param_jac=param_jac,
+                limits=(0, 1),
+                quad_kwargs=quad_kwargs,
+            )
+
         # if the integration hasn't worked we'll need to destroy this edge
-        if np.isnan(edge_res) or np.isinf(edge_res):
+        if (
+            np.isnan(edge_res)
+            or np.isinf(edge_res)
+            or np.isnan(reciprocal)
+            or np.isinf(reciprocal)
+        ):
             inf_edges.add(frozenset((a, b)))
 
     return res, inf_edges
