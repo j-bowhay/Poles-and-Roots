@@ -114,12 +114,11 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAARe
         if mask.sum() >= m + 1:
             # Reduced SVD
             _, s, V = scipy.linalg.svd(A[mask, : m + 1], full_matrices=False)
-            V = V.conj().T
             # Treat case of multiple min sing val
             mm = np.nonzero(s == np.min(s))[0]
             nm = mm.size
             # Aim for non-sparse wt vector
-            wj = V[:, mm] @ np.ones(nm) / np.sqrt(nm)
+            wj = V.conj()[mm, :].sum(axis=0) / np.sqrt(nm)
         elif mask.sum() >= 1:
             # Fewer rows than columns
             V = scipy.linalg.null_space(A[mask, : m + 1])
