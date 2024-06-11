@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from poles_roots.triangulation import adaptive_triangulation
 from poles_roots.aaa import AAA
@@ -10,6 +11,7 @@ from poles_roots._utils import (
     point_in_triangle,
     linspace_on_tri,
 )
+from poles_roots.plotting import phase_plot, plot_poles_zeros
 
 
 @dataclass
@@ -28,6 +30,8 @@ def find_zeros_poles(
     num_sample_points: int,
     arg_principal_threshold: float,
     quad_kwargs=None,
+    plot_triangulation=False,
+    plot_aaa=False,
 ) -> _ZerosPolesResult:
     """Compute all the zeros and pole of `f`
 
@@ -57,7 +61,12 @@ def find_zeros_poles(
     """
     # triangulate the domain
     points, simplices, arg_princ_z_minus_ps = adaptive_triangulation(
-        f, f_jac, points, arg_principal_threshold, quad_kwargs
+        f,
+        f_jac,
+        points,
+        arg_principal_threshold,
+        quad_kwargs=quad_kwargs,
+        plot=plot_triangulation,
     )
 
     poles = []
@@ -73,6 +82,22 @@ def find_zeros_poles(
         F = f(z)
 
         aaa_res = AAA(F, z)
+
+        if plot_aaa:
+            fig, ax = plt.subplots()
+            phase_plot(
+                aaa_res,
+                ax,
+                domain=[
+                    np.min(points[:, 0]),
+                    np.max(points[:, 0]),
+                    np.min(points[:, 1]),
+                    np.max(points[:, 1]),
+                ],
+            )
+            plot_poles_zeros(aaa_res, ax)
+            ax.plot(z.real, z.imag, ".")
+            plt.show()
 
         # only report zeros and poles that are within the simplex
         A, B, C = points[simplex, :]
@@ -101,4 +126,17 @@ def find_zeros_poles(
         residuals=np.asarray(residuals),
         points=points,
         simplices=simplices,
+    )
+
+
+if __name__ == "__main__":
+    from poles_roots import reference_problems
+
+    find_zeros_poles(
+        reference_problems.func5,
+        reference_problems.func5_jac,
+        points=[-11 - 11j, 11 - 11j, 11 + 11j, -11 + 11j],
+        arg_principal_threshold=1.1,
+        num_sample_points=50,
+        plot_aaa=True,
     )
