@@ -62,7 +62,8 @@ def find_zeros_poles(
     """
     points = initial_points
 
-    # iterate until happy with result
+    # iterate until AAA and arg principle agree
+    # TODO: don't iterate forever!
     while True:
         # triangulate the domain
         tri, arg_princ_z_minus_ps = adaptive_triangulation(
@@ -79,17 +80,22 @@ def find_zeros_poles(
         zeros = []
         refine_further = False
         new_points = tri.points
+
         # apply aaa on each simplex
         for simplex, arg_princ_z_minus_p in zip(tri.simplices, arg_princ_z_minus_ps):
             # generate points on the edge of the simplex
             sample_points = linspace_on_tri(tri.points[simplex, :], num_sample_points)
             z = convert_cart_to_complex(sample_points)
 
-            # function values
+            # sample the function on the edge of the simplex
             F = f(z)
 
+            # generate aaa approximations for both f and 1/f as pole find works better
+            # than zero finding
             aaa_res = AAA(F, z)
+            aaa_reciprocal = AAA(1 / F, z)
 
+            # debug plotting, can remove later
             if plot_aaa:
                 fig, ax = plt.subplots()
                 phase_plot(
@@ -116,11 +122,13 @@ def find_zeros_poles(
                     residuals.append(residual)
                     aaa_z_minus_p -= 1
 
-            for zero in aaa_res.zeros:
+            for zero in aaa_reciprocal.poles:
                 if point_in_triangle(np.array([zero.real, zero.imag]), A, B, C):
                     zeros.append(zero)
                     aaa_z_minus_p += 1
 
+            # report if AAA and argument principle are not matching and destroy the
+            # triangle if so
             if not np.allclose(arg_princ_z_minus_p, aaa_z_minus_p):
                 print(
                     f"AAA and argument principle don't match: {aaa_z_minus_p=}, {arg_princ_z_minus_p=}"
@@ -146,9 +154,9 @@ if __name__ == "__main__":
     from poles_roots import reference_problems
 
     find_zeros_poles(
-        reference_problems.func5,
-        reference_problems.func5_jac,
-        initial_points=[-11 - 11j, 11 - 11j, 11 + 11j, -11 + 11j],
-        arg_principal_threshold=1.1,
-        num_sample_points=50,
+        reference_problems.func4,
+        reference_problems.func4_jac,
+        initial_points=[-10 - 10j, 10 - 10j, 10 + 10j, -10 + 10j],
+        arg_principal_threshold=4.1,
+        num_sample_points=100,
     )

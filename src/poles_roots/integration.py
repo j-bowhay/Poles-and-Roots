@@ -15,6 +15,7 @@ def complex_integration(
     quad_kwargs: Optional[dict] = None,
 ) -> complex:
     """Complex path integration"""
+    # parametrise the integral
     if callable(param_jac):
 
         def _f(t):
@@ -64,6 +65,8 @@ def argument_principle_from_points(
     the given points."""
     inf_edges = set()
     res = 0
+
+    # iterate over the edges
     for i, a in enumerate(points):
         b = np.take(points, i + 1, mode="wrap")
 
@@ -96,6 +99,8 @@ def argument_principle_from_points(
             or np.isnan(reciprocal)
             or np.isinf(reciprocal)
         ):
+            # we a frozen set here because were integrate each edge twice but in
+            # opposite directions we only want to destroy it once
             inf_edges.add(frozenset((a, b)))
 
     return res, inf_edges
