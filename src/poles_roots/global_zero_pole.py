@@ -42,7 +42,7 @@ def find_zeros_poles(
         Function to compute poles and zeros of.
     f_jac : Callable
         Derivative of `f`.
-    points : array
+    initial_points : array
         Points describing the Jordan curve to search the interior of.
     num_sample_points : int
         Number of points to sample on the boundary of each simplex for aaa.
@@ -54,6 +54,10 @@ def find_zeros_poles(
         Threshold value for Cauchy's argument principle for the adaptive triangulation
     quad_kwargs : dict, optional
         arguments to be passed to `scipy.integrate.quad`, by default None
+    plot_triangulation : bool, optional
+        Plots each step of the adaptive triangulation for debugging
+    plot_aaa : bool, optional
+        Plots each AAA approximation for debugging
 
     Returns
     -------
