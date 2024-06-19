@@ -46,6 +46,7 @@ def argument_principle_from_parametrisation(
     param_jac: Callable | float,
     limits: tuple[float, float],
     quad_kwargs: Optional[dict] = None,
+    method="quad",
 ) -> float:
     """Compute the argument principal integral of a parametrised curve."""
 
@@ -54,11 +55,7 @@ def argument_principle_from_parametrisation(
             return f_jac(t) / f(t)
 
     return complex_integration(
-        _f,
-        param,
-        param_jac,
-        limits,
-        quad_kwargs=quad_kwargs,
+        _f, param, param_jac, limits, quad_kwargs=quad_kwargs, method=method
     ) / (2 * np.pi * 1j)
 
 
