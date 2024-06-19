@@ -64,6 +64,7 @@ def argument_principle_from_points(
     f_jac: Callable,
     points: np.ndarray,
     quad_kwargs: Optional[dict] = None,
+    method="quad",
 ) -> complex:
     """Compute the argument principle of a closed curve defined by line segments between
     the given points."""
@@ -77,12 +78,7 @@ def argument_principle_from_points(
         param, param_jac = parametrise_between_two_points(a, b)
 
         edge_res = argument_principle_from_parametrisation(
-            f,
-            f_jac,
-            param,
-            param_jac,
-            (0, 1),
-            quad_kwargs=quad_kwargs,
+            f, f_jac, param, param_jac, (0, 1), quad_kwargs=quad_kwargs, method=method
         )
         res += edge_res
 
@@ -94,6 +90,7 @@ def argument_principle_from_points(
                 param_jac=param_jac,
                 limits=(0, 1),
                 quad_kwargs=quad_kwargs,
+                method=method,
             )
 
         # if the integration hasn't worked we'll need to destroy this edge

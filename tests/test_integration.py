@@ -100,8 +100,15 @@ class TestArgumentPrincipleFromPoints:
             (lambda z: z, lambda z: 1, [-10 - 10j, 1 - 1j, 20 + 1j, -1 + 1j], 1),
         ],
     )
-    def test_finite(self, f, f_jac, points, expected):
-        res, inf_edges = argument_principle_from_points(f, f_jac, points)
+    @pytest.mark.parametrize("method", ["quad", "fixed"])
+    def test_finite(self, f, f_jac, points, expected, method):
+        if method == "fixed":
+            quad_kwargs = {"n": 50}
+        else:
+            quad_kwargs = None
+        res, inf_edges = argument_principle_from_points(
+            f, f_jac, points, method=method, quad_kwargs=quad_kwargs
+        )
         assert_allclose(res, expected)
         assert_equal(inf_edges, set())
 
