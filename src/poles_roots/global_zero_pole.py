@@ -117,17 +117,17 @@ def find_zeros_poles(
                 plt.show()
 
             # only report zeros and poles that are within the simplex
-            A, B, C = tri.points[simplex, :]
+            simplex_points = tri.points[simplex, :]
 
             aaa_z_minus_p = 0
             for pole, residual in zip(aaa_res.poles, aaa_res.residuals):
-                if point_in_triangle(np.array([pole.real, pole.imag]), A, B, C):
+                if point_in_triangle(np.array([pole.real, pole.imag]), *simplex_points):
                     poles.append(pole)
                     residuals.append(residual)
                     aaa_z_minus_p -= 1
 
             for zero in aaa_reciprocal.poles:
-                if point_in_triangle(np.array([zero.real, zero.imag]), A, B, C):
+                if point_in_triangle(np.array([zero.real, zero.imag]), *simplex_points):
                     zeros.append(zero)
                     aaa_z_minus_p += 1
 
@@ -139,7 +139,7 @@ def find_zeros_poles(
                 )
                 refine_further = True
                 new_points = np.concatenate(
-                    [new_points, compute_incenter(A, B, C)[np.newaxis]]
+                    [new_points, compute_incenter(simplex_points)[np.newaxis]]
                 )
 
         if not refine_further:

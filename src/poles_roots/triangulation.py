@@ -90,8 +90,7 @@ def adaptive_triangulation(
             points_to_add = np.empty((insert_index.size, 2))
             # destroy triangles where |Z-P| is too large
             for i, simplex in enumerate(tri.simplices[insert_index]):
-                A, B, C = tri.points[simplex, :]
-                points_to_add[i, :] = compute_incenter(A, B, C)
+                points_to_add[i, :] = compute_incenter(*tri.points[simplex, :])
 
         # add new points to triangulation
         points = np.concatenate([points, points_to_add])
