@@ -2,6 +2,7 @@ from typing import Optional, Callable
 
 import numpy as np
 import scipy
+import scipy.integrate
 
 from poles_roots._utils import convert_cart_to_complex, parametrise_between_two_points
 
@@ -12,6 +13,7 @@ def complex_integration(
     param_jac: Callable | float,
     limits: tuple[float, float] = (0, 1),
     *,
+    method: str = "quad",
     quad_kwargs: Optional[dict] = None,
 ) -> complex:
     """Complex path integration"""
@@ -27,9 +29,14 @@ def complex_integration(
 
     quad_kwargs = {} if quad_kwargs is None else quad_kwargs
 
-    return scipy.integrate.quad(
-        _f, *limits, complex_func=True, full_output=True, **quad_kwargs
-    )[0]
+    if method == "quad":
+        return scipy.integrate.quad(
+            _f, *limits, complex_func=True, full_output=True, **quad_kwargs
+        )[0]
+    elif method == "fixed":
+        return scipy.integrate.fixed_quad(_f, *limits, **quad_kwargs)[0]
+    else:
+        raise ValueError("Invalid Method")
 
 
 def argument_principle_from_parametrisation(

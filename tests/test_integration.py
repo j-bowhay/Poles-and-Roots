@@ -61,8 +61,18 @@ def param_3_jac(t):
         (z_inv, param_3, param_3_jac, (0, 2 * np.pi), 2 * np.pi * 1j),
     ],
 )
-def test_complex_integration(f, param, param_jac, limits, expected):
-    assert_allclose(complex_integration(f, param, param_jac, limits), expected)
+@pytest.mark.parametrize("method", ["quad", "fixed"])
+def test_complex_integration(f, param, param_jac, limits, expected, method):
+    if method == "fixed":
+        quad_kwargs = {"n": 20}
+    else:
+        quad_kwargs = None
+    assert_allclose(
+        complex_integration(
+            f, param, param_jac, limits, method=method, quad_kwargs=quad_kwargs
+        ),
+        expected,
+    )
 
 
 @pytest.mark.parametrize(
