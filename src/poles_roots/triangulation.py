@@ -50,7 +50,7 @@ def adaptive_triangulation(
 
         if to_destroy:
             # destroy edge if we are integrating through a pole or a zero
-            points_to_add = np.empty((len(to_destroy), 2))
+            points_to_add = np.empty((len(to_destroy) * 2, 2))
             for i, (a, b) in enumerate(to_destroy):
                 # We use scipy.spatial.Convex hull as the convex hull function in
                 # scipy.spatial.Delaunay does not seem to guarantee anti-clockwise
@@ -69,20 +69,28 @@ def adaptive_triangulation(
 
                 # edge not on convex hull, proceed with destroying edge by inserting a
                 # point in the circle whose diameter is between the to ends of the edge
-                acceptable_point = False
-                while not acceptable_point:
+                acceptable_points = np.zeros(2, dtype=np.bool_)
+                points_for_edge = np.empty((2, 2))
+                while np.any(~acceptable_points):
                     # for now we will just choose this point randomly, maybe there's
                     # a better way of doing this
                     center = (a + b) / 2
-                    radius = np.abs(a - b) / 2
+                    diff = a - b
+                    radius = np.abs(diff) / 2
+                    angle = np.angle(diff)
                     r = radius * np.sqrt(rng.random())
-                    theta = rng.uniform(0, 2 * np.pi)
-                    new = center + r * np.exp(theta * 1j)
-                    point = [new.real, new.imag]
+                    theta = rng.uniform(
+                        [angle, angle + np.pi], [angle + np.pi, angle + 2 * np.pi]
+                    )
+                    new = (center + r * np.exp(theta * 1j))[~acceptable_points]
+                    points_for_edge[~acceptable_points] = np.dstack(
+                        [new.real, new.imag]
+                    )
                     # check that the point we are inserting is within the search domain
-                    if point_in_polygon(point, tri.points[hull.vertices, :]):
-                        acceptable_point = True
-                points_to_add[i, :] = point
+                    for j, point in enumerate(points_for_edge):
+                        if point_in_polygon(point, tri.points[hull.vertices, :]):
+                            acceptable_points[j] = True
+                points_to_add[2 * i : 2 * i + 2, :] = points_for_edge
         else:
             # no poles/zeros on any edges, we can proceed with destroy triangles
             # compute the points to be added to the triangulation
@@ -121,10 +129,23 @@ def adaptive_triangulation(
 
 
 if __name__ == "__main__":
-    adaptive_triangulation(
-        lambda z: z,
-        lambda z: 1,
-        [-5, 5, 5 - 5j, -5 - 5j],
+    import matplotlib.pyplot as plt
+
+    from poles_roots.global_zero_pole import find_zeros_poles
+    from poles_roots.plotting import phase_plot, plot_poles_zeros
+
+    res = find_zeros_poles(
+        lambda z: 1 / z,
+        lambda z: -1 / z**2,
+        initial_points=[-5 - 5j, 5 - 5j, 5 + 5j, -5 + 5j],
         arg_principal_threshold=1.1,
-        plot=True,
+        num_sample_points=50,
     )
+
+    fig, axs = plt.subplots(ncols=2, figsize=(12, 6))
+    phase_plot(lambda z: 1 / z, axs[0], domain=[-6, 6, -6, 6])
+    phase_plot(lambda z: 1 / z, axs[1], domain=[-6, 6, -6, 6])
+    plot_poles_zeros(res, axs[0])
+    axs[0].legend()
+    axs[1].triplot(res.points[:, 0], res.points[:, 1], res.simplices)
+    plt.show()
