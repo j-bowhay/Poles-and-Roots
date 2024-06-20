@@ -61,10 +61,12 @@ def param_3_jac(t):
         (z_inv, param_3, param_3_jac, (0, 2 * np.pi), 2 * np.pi * 1j),
     ],
 )
-@pytest.mark.parametrize("method", ["quad", "fixed"])
+@pytest.mark.parametrize("method", ["quad", "fixed", "trapezium"])
 def test_complex_integration(f, param, param_jac, limits, expected, method):
     if method == "fixed":
         quad_kwargs = {"n": 20}
+    elif method == "trapezium":
+        quad_kwargs = {"num": 10000}
     else:
         quad_kwargs = None
     assert_allclose(
@@ -82,7 +84,7 @@ def test_complex_integration(f, param, param_jac, limits, expected, method):
         (lambda z: z, lambda z: 1, param_3, param_3_jac, (0, 2 * np.pi), 1),
     ],
 )
-@pytest.mark.parametrize("method", ["quad", "fixed"])
+@pytest.mark.parametrize("method", ["quad", "fixed", "trapezium"])
 def test_argument_principal(f, f_jac, param, param_jac, limits, expected, method):
     assert_allclose(
         argument_principle_from_parametrisation(
@@ -100,10 +102,12 @@ class TestArgumentPrincipleFromPoints:
             (lambda z: z, lambda z: 1, [-10 - 10j, 1 - 1j, 20 + 1j, -1 + 1j], 1),
         ],
     )
-    @pytest.mark.parametrize("method", ["quad", "fixed"])
+    @pytest.mark.parametrize("method", ["quad", "fixed", "trapezium"])
     def test_finite(self, f, f_jac, points, expected, method):
         if method == "fixed":
             quad_kwargs = {"n": 50}
+        elif method == "trapezium":
+            quad_kwargs = {"num": 10000}
         else:
             quad_kwargs = None
         res, inf_edges = argument_principle_from_points(

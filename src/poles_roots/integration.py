@@ -35,6 +35,9 @@ def complex_integration(
         )[0]
     elif method == "fixed":
         return scipy.integrate.fixed_quad(_f, *limits, **quad_kwargs)[0]
+    elif method == "trapezium":
+        t = np.linspace(*limits, **quad_kwargs)
+        return scipy.integrate.trapezoid(_f(t), t)
     else:
         raise ValueError("Invalid Method")
 
