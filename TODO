@@ -1,0 +1,12 @@
+# To do list:
+
+- [ ] Sample in the triangle not just on
+- [ ] Add stronger tests for AAA
+- [ ] Add different modes for what function AAA should approximate
+- [ ] Implement Delves and Lyness
+- [ ] Implement Kravanja and Barel
+- [ ] Detect zeros on the boundary by looking at the magnitude of f(z) rather than doing
+      extra quadrature
+- [ ] Newton method to polish / subdivide if not matching
+- [ ] Update sampling experiment to include how accurate is the computed pole, how accurate
+      is the computed approximation, also consider a holomorphic function
