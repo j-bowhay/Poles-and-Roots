@@ -6,3 +6,5 @@ import poles_roots._diff
 import poles_roots.triangulation
 import poles_roots.global_zero_pole
 import poles_roots._utils
+import poles_roots.delves_lyness
+import poles_roots.kravanja_van_barel
