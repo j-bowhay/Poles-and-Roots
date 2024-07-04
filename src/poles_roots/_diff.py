@@ -10,6 +10,6 @@ def derivative(f, z, /):
 
 def complex_derivitive(f, z, N):
     k = np.arange(N)
-    zk = np.exp(2 * np.pi * 1j * k / N)
+    zk = np.exp(2 * np.pi * 1j * k / N) + z
     fk = f(zk)
     return np.mean(zk * fk / (z - zk) ** 2)
