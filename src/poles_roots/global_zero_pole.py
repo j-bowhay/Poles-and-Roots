@@ -139,7 +139,7 @@ def find_zeros_poles(
                 )
                 refine_further = True
                 new_points = np.concatenate(
-                    [new_points, compute_incenter(simplex_points)[np.newaxis]]
+                    [new_points, compute_incenter(*simplex_points)[np.newaxis]]
                 )
 
         if not refine_further:
