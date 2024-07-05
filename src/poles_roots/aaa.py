@@ -8,11 +8,11 @@ import scipy.sparse
 
 
 @dataclass
-class _AAAResult:
+class AAAResult:
     """Results object to store the output of the AAA algorithm."""
 
     poles: np.ndarray
-    residuals: np.ndarray
+    residues: np.ndarray
     zeros: np.ndarray
     support_points: np.ndarray
     data_values: np.ndarray
@@ -64,7 +64,7 @@ def _AAA_iv(F, Z, mmax):
     return F, Z, mmax
 
 
-def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAAResult:
+def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> AAAResult:
     """Compute the AAA rational approximation of function values `F` sampled at `Z`"""
     F, Z, mmax = _AAA_iv(F, Z, mmax)
 
@@ -174,7 +174,7 @@ def AAA(F, Z, *, tol=1e-13, mmax=100, cleanup=True, cleanup_tol=1e-13) -> _AAARe
         wj, zj, fj, Z, F = _clean_up(pol, res, wj, zj, fj, Z, F, cleanup_tol)
         pol, res, zer = _prz(zj, fj, wj)
 
-    return _AAAResult(pol, res, zer, zj, fj, wj, errvec)
+    return AAAResult(pol, res, zer, zj, fj, wj, errvec)
 
 
 def _prz(zj, fj, wj):

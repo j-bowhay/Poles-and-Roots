@@ -16,10 +16,10 @@ from poles_roots.plotting import phase_plot, plot_poles_zeros
 
 
 @dataclass
-class _ZerosPolesResult:
+class ZerosPolesResult:
     zeros: np.ndarray
     poles: np.ndarray
-    residuals: np.ndarray
+    residues: np.ndarray
     points: np.ndarray
     simplices: np.ndarray
 
@@ -33,7 +33,7 @@ def find_zeros_poles(
     quad_kwargs=None,
     plot_triangulation=False,
     plot_aaa=False,
-) -> _ZerosPolesResult:
+) -> ZerosPolesResult:
     """Compute all the zeros and pole of `f`
 
     Parameters
@@ -80,7 +80,7 @@ def find_zeros_poles(
         )
 
         poles = []
-        residuals = []
+        residues = []
         zeros = []
         refine_further = False
         new_points = tri.points
@@ -103,10 +103,10 @@ def find_zeros_poles(
             simplex_points = tri.points[simplex, :]
 
             aaa_z_minus_p = 0
-            for pole, residual in zip(aaa_res.poles, aaa_res.residuals):
+            for pole, residue in zip(aaa_res.poles, aaa_res.residues):
                 if point_in_triangle(np.array([pole.real, pole.imag]), *simplex_points):
                     poles.append(pole)
-                    residuals.append(residual)
+                    residues.append(residue)
                     aaa_z_minus_p -= 1
 
             for zero in aaa_reciprocal.poles:
@@ -143,10 +143,10 @@ def find_zeros_poles(
                 )
 
         if not refine_further:
-            return _ZerosPolesResult(
+            return ZerosPolesResult(
                 zeros=np.asarray(zeros),
                 poles=np.asarray(poles),
-                residuals=np.asarray(residuals),
+                residues=np.asarray(residues),
                 points=tri.points,
                 simplices=tri.simplices,
             )

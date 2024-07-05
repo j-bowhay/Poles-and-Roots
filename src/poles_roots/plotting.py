@@ -1,6 +1,6 @@
 import numpy as np
 
-from poles_roots.aaa import _AAAResult
+from poles_roots.aaa import AAAResult
 
 
 def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
@@ -39,7 +39,7 @@ def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
 
 
 def plot_poles_zeros(
-    result_object: _AAAResult,
+    result_object: AAAResult,
     ax,
     /,
     *,

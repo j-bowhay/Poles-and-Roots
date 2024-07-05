@@ -88,7 +88,7 @@ class TestAAA:
         assert_array_less(np.min(np.abs(r.zeros)), TOL)
         assert_array_less(np.min(np.abs(r.poles - 0.5)), TOL)
         # Test for spurious poles
-        assert np.min(np.abs(r.residuals)) > 1e-13
+        assert np.min(np.abs(r.residues)) > 1e-13
 
     def test_short_cases(self):
         Z = [0, 1]
@@ -140,8 +140,8 @@ class TestAAA:
         X = np.linspace(-1.337, 2, num=537)
         r = AAA(np.exp(X) / X, X)
         ii = np.nonzero(np.abs(r.poles) < 1e-8)[0]
-        assert_allclose(r.residuals[ii], 1, atol=1e-15)
+        assert_allclose(r.residues[ii], 1, atol=1e-15)
 
         r = AAA((1 + 1j) * scipy.special.gamma(X), X)
         ii = np.nonzero(abs(r.poles - (-1)) < 1e-8)
-        assert_allclose(r.residuals[ii], -1 - 1j, atol=1e-15)
+        assert_allclose(r.residues[ii], -1 - 1j, atol=1e-15)
