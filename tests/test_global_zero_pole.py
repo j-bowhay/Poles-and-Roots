@@ -12,8 +12,9 @@ from poles_roots import reference_problems
         (reference_problems.func1, reference_problems.func1_jac, 1.1, [], [2]),
     ],
 )
+@pytest.mark.parametrize("approx_func", ["f'/f", "both", "f", "1/f"])
 def test_find_zeros_poles(
-    f, f_prime, arg_principal_threshold, expected_pole, expected_zeros
+    f, f_prime, arg_principal_threshold, expected_pole, expected_zeros, approx_func
 ):
     res = find_zeros_poles(
         f,
@@ -21,6 +22,7 @@ def test_find_zeros_poles(
         initial_points=[-10 - 10j, 10 - 10j, 10 + 10j, -10 + 10j],
         arg_principal_threshold=arg_principal_threshold,
         num_sample_points=50,
+        approx_func=approx_func,
     )
     assert_allclose(res.poles, expected_pole)
     assert_allclose(res.zeros, expected_zeros)

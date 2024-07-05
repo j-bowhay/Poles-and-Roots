@@ -33,6 +33,7 @@ def find_zeros_poles(
     quad_kwargs=None,
     plot_triangulation=False,
     plot_aaa=False,
+    approx_func="f'/f",
 ) -> ZerosPolesResult:
     """Compute all the zeros and pole of `f`
 
@@ -94,31 +95,85 @@ def find_zeros_poles(
             # sample the function on the edge of the simplex
             F = f(z)
 
-            # generate aaa approximations for both f and 1/f as pole find works better
-            # than zero finding
-            aaa_res = AAA(F, z)
-            aaa_reciprocal = AAA(1 / F, z)
-
             # only report zeros and poles that are within the simplex
             simplex_points = tri.points[simplex, :]
 
             aaa_z_minus_p = 0
-            for pole, residue in zip(aaa_res.poles, aaa_res.residues):
-                if point_in_triangle(np.array([pole.real, pole.imag]), *simplex_points):
-                    poles.append(pole)
-                    residues.append(residue)
-                    aaa_z_minus_p -= 1
 
-            for zero in aaa_reciprocal.poles:
-                if point_in_triangle(np.array([zero.real, zero.imag]), *simplex_points):
-                    zeros.append(zero)
-                    aaa_z_minus_p += 1
+            if approx_func == "f'/f":
+                aaa_log_deriv = AAA(f_jac(z) / F, z)
+
+                for pole, residue in zip(aaa_log_deriv.poles, aaa_log_deriv.residues):
+                    if point_in_triangle(
+                        np.array([pole.real, pole.imag]), *simplex_points
+                    ):
+                        if residue > 0:
+                            zeros.append(pole)
+                            aaa_z_minus_p += 1
+                        else:
+                            poles.append(pole)
+                            aaa_z_minus_p -= 1
+            elif approx_func == "f":
+                aaa_f = AAA(F, z)
+
+                for pole, residue in zip(aaa_f.poles, aaa_f.residues):
+                    if point_in_triangle(
+                        np.array([pole.real, pole.imag]), *simplex_points
+                    ):
+                        poles.append(pole)
+                        residues.append(residue)
+                        aaa_z_minus_p -= 1
+
+                for zero in aaa_f.zeros:
+                    if point_in_triangle(
+                        np.array([zero.real, zero.imag]), *simplex_points
+                    ):
+                        zeros.append(zero)
+                        aaa_z_minus_p += 1
+
+            elif approx_func == "1/f":
+                aaa_reciprocal = AAA(1 / F, z)
+
+                for pole in aaa_reciprocal.zeros:
+                    if point_in_triangle(
+                        np.array([pole.real, pole.imag]), *simplex_points
+                    ):
+                        poles.append(pole)
+                        aaa_z_minus_p -= 1
+
+                for zero in aaa_reciprocal.poles:
+                    if point_in_triangle(
+                        np.array([zero.real, zero.imag]), *simplex_points
+                    ):
+                        zeros.append(zero)
+                        aaa_z_minus_p += 1
+
+            elif approx_func == "both":
+                aaa_f = AAA(F, z)
+                aaa_reciprocal = AAA(1 / F, z)
+
+                for pole, residue in zip(aaa_f.poles, aaa_f.residues):
+                    if point_in_triangle(
+                        np.array([pole.real, pole.imag]), *simplex_points
+                    ):
+                        poles.append(pole)
+                        residues.append(residue)
+                        aaa_z_minus_p -= 1
+
+                for zero in aaa_reciprocal.poles:
+                    if point_in_triangle(
+                        np.array([zero.real, zero.imag]), *simplex_points
+                    ):
+                        zeros.append(zero)
+                        aaa_z_minus_p += 1
+            else:
+                raise ValueError("Invalid option for `approx_func`.")
 
             # debug plotting, can remove later
             if plot_aaa:
                 fig, ax = plt.subplots()
                 phase_plot(
-                    aaa_res,
+                    aaa_f,
                     ax,
                     domain=[
                         np.min(tri.points[:, 0]),
@@ -127,7 +182,7 @@ def find_zeros_poles(
                         np.max(tri.points[:, 1]),
                     ],
                 )
-                plot_poles_zeros(aaa_res, ax)
+                plot_poles_zeros(aaa_f, ax)
                 ax.plot(z.real, z.imag, ".")
                 plt.show()
 
@@ -158,8 +213,8 @@ if __name__ == "__main__":
     from poles_roots import reference_problems
 
     find_zeros_poles(
-        reference_problems.func4,
-        reference_problems.func4_jac,
+        reference_problems.func0,
+        reference_problems.func0_jac,
         initial_points=[-10 - 10j, 10 - 10j, 10 + 10j, -10 + 10j],
         arg_principal_threshold=4.1,
         num_sample_points=100,
