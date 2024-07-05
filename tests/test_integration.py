@@ -126,6 +126,25 @@ class TestArgumentPrincipleFromPoints:
         _, inf_edges = argument_principle_from_points(f, f_jac, points)
         assert_equal(inf_edges, {frozenset((-1, 1))})
 
+    @pytest.mark.parametrize(
+        "f,f_jac,points,expected",
+        [
+            (lambda z: z, lambda z: 1, [-10 - 10j, 1 - 1j, 20 + 1j, -1 + 1j], 0),
+            (z_inv, z_inv_jac, [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j], 0),
+            (lambda z: z - 0.5, lambda z: 1, [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j], 0.5),
+            (
+                lambda z: 1 / (z + 0.1),
+                lambda z: -1 / (z + 0.1) ** 2,
+                [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j],
+                0.1,
+            ),
+        ],
+    )
+    def test_moment(self, f, f_jac, points, expected):
+        res, inf_edges = argument_principle_from_points(f, f_jac, points, moment=1)
+        assert_allclose(res, expected, atol=1e-12)
+        assert_equal(inf_edges, set())
+
 
 class TestArgumentPrincipleFromTriangulation:
     def test_no_poles_on_diagonal(self):

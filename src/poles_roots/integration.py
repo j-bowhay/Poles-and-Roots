@@ -50,12 +50,13 @@ def argument_principle_from_parametrisation(
     limits: tuple[float, float],
     quad_kwargs: Optional[dict] = None,
     method="quad",
+    moment=0,
 ) -> float:
     """Compute the argument principal integral of a parametrised curve."""
 
     def _f(t):
         with np.errstate(divide="ignore", invalid="ignore"):
-            return f_jac(t) / f(t)
+            return t**moment * f_jac(t) / f(t)
 
     return complex_integration(
         _f, param, param_jac, limits, quad_kwargs=quad_kwargs, method=method
@@ -68,6 +69,7 @@ def argument_principle_from_points(
     points: np.ndarray,
     quad_kwargs: Optional[dict] = None,
     method="quad",
+    moment=0,
 ) -> complex:
     """Compute the argument principle of a closed curve defined by line segments between
     the given points."""
@@ -81,7 +83,14 @@ def argument_principle_from_points(
         param, param_jac = parametrise_between_two_points(a, b)
 
         edge_res = argument_principle_from_parametrisation(
-            f, f_jac, param, param_jac, (0, 1), quad_kwargs=quad_kwargs, method=method
+            f,
+            f_jac,
+            param,
+            param_jac,
+            (0, 1),
+            quad_kwargs=quad_kwargs,
+            method=method,
+            moment=moment,
         )
         res += edge_res
 
