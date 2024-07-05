@@ -11,4 +11,4 @@
 - [X] Update sampling experiment to include how accurate is the computed pole, how accurate
       is the computed approximation, also consider a holomorphic function
 - [ ] Implement numerical differentiation using 2.7 of https://people.maths.ox.ac.uk/trefethen/publication/PDF/2014_148.pdf
-- [ ] Use a harder function in the subdivision experiment
+- [X] Use a harder function in the subdivision experiment
