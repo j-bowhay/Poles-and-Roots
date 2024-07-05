@@ -8,8 +8,8 @@ from poles_roots import reference_problems
 @pytest.mark.parametrize(
     "f,f_prime,arg_principal_threshold,expected_pole,expected_zeros",
     [
-        (reference_problems.func0, reference_problems.func0_jac, 1.1, [0.5], []),
-        (reference_problems.func1, reference_problems.func1_jac, 1.1, [], [2]),
+        (reference_problems.func0, reference_problems.func0_prime, 1.1, [0.5], []),
+        (reference_problems.func1, reference_problems.func1_prime, 1.1, [], [2]),
     ],
 )
 @pytest.mark.parametrize("approx_func", ["f'/f", "both", "f", "1/f"])

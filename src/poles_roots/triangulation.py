@@ -10,7 +10,7 @@ from poles_roots._utils import compute_incenter, point_in_polygon
 
 def adaptive_triangulation(
     f,
-    f_jac,
+    f_prime,
     initial_points,
     arg_principal_threshold,
     plot=False,
@@ -26,7 +26,7 @@ def adaptive_triangulation(
     tri = scipy.spatial.Delaunay(points)
     z_minus_p, to_destroy = argument_priciple_of_triangulation(
         f,
-        f_jac,
+        f_prime,
         tri.points,
         tri.simplices,
         quad_kwargs,
@@ -107,7 +107,7 @@ def adaptive_triangulation(
         # recompute the argument principle
         z_minus_p, to_destroy = argument_priciple_of_triangulation(
             f,
-            f_jac,
+            f_prime,
             tri.points,
             tri.simplices,
             quad_kwargs,

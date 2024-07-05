@@ -26,7 +26,7 @@ class ZerosPolesResult:
 
 def find_zeros_poles(
     f: Callable,
-    f_jac: Callable,
+    f_prime: Callable,
     initial_points: np.ndarray,
     num_sample_points: int,
     arg_principal_threshold: float,
@@ -41,7 +41,7 @@ def find_zeros_poles(
     ----------
     f : Callable
         Function to compute poles and zeros of.
-    f_jac : Callable
+    f_prime : Callable
         Derivative of `f`.
     initial_points : array
         Points describing the Jordan curve to search the interior of.
@@ -73,7 +73,7 @@ def find_zeros_poles(
         # triangulate the domain
         tri, arg_princ_z_minus_ps = adaptive_triangulation(
             f,
-            f_jac,
+            f_prime,
             points,
             arg_principal_threshold,
             quad_kwargs=quad_kwargs,
@@ -101,7 +101,7 @@ def find_zeros_poles(
             aaa_z_minus_p = 0
 
             if approx_func == "f'/f":
-                aaa_log_deriv = AAA(f_jac(z) / F, z)
+                aaa_log_deriv = AAA(f_prime(z) / F, z)
 
                 for pole, residue in zip(aaa_log_deriv.poles, aaa_log_deriv.residues):
                     if point_in_triangle(
@@ -214,7 +214,7 @@ if __name__ == "__main__":
 
     find_zeros_poles(
         reference_problems.func0,
-        reference_problems.func0_jac,
+        reference_problems.func0_prime,
         initial_points=[-10 - 10j, 10 - 10j, 10 + 10j, -10 + 10j],
         arg_principal_threshold=4.1,
         num_sample_points=100,

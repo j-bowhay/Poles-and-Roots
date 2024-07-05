@@ -5,7 +5,7 @@ def func0(z):
     return 1 / (z - 0.5)
 
 
-def func0_jac(z):
+def func0_prime(z):
     return -1 / (z - 0.5) ** 2
 
 
@@ -13,7 +13,7 @@ def func1(z):
     return z - 2
 
 
-def func1_jac(z):
+def func1_prime(z):
     return 1
 
 
@@ -21,7 +21,7 @@ def func2(z):
     return np.exp(3 * z) + 2 * z * np.cos(z) - 1
 
 
-def func2_jac(z):
+def func2_prime(z):
     return 3 * np.exp(3 * z) + 2 * (np.cos(z) - z * np.sin(z))
 
 
@@ -29,7 +29,7 @@ def func3(z):
     return z * z * (z - 1) * (z - 2) * (z - 3) * (z - 4) + z * np.sin(z)
 
 
-def func3_jac(z):
+def func3_prime(z):
     return (
         2 * z * (3 * z * z * z * z - 25 * z * z * z + 70 * z * z - 75 * z + 24)
         + np.sin(z)
@@ -41,7 +41,7 @@ def func4(z):
     return z**2 * (z - 2) ** 2 * (z**3 + np.exp(2 * z) * np.cos(z) - np.sin(z) - 1)
 
 
-def func4_jac(z):
+def func4_prime(z):
     return (
         z**2
         * (z - 2) ** 2
@@ -71,7 +71,7 @@ def func5(z):
     )
 
 
-def func5_jac(z):
+def func5_prime(z):
     return (2 * z - 11) * (
         966240
         + (z - 11)

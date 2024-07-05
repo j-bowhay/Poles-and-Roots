@@ -19,7 +19,7 @@ def param_1(t):
     return t * (1 + 1j)
 
 
-def param_1_jac(t):
+def param_1_prime(t):
     return 1 + 1j
 
 
@@ -31,7 +31,7 @@ def param_2(t):
     return t * 1j
 
 
-def param_2_jac(t):
+def param_2_prime(t):
     return 1j
 
 
@@ -39,7 +39,7 @@ def z_inv(z):
     return 1 / z
 
 
-def z_inv_jac(z):
+def z_inv_prime(z):
     return -1 / z**2
 
 
@@ -47,22 +47,22 @@ def param_3(t):
     return np.exp(t * 1j)
 
 
-def param_3_jac(t):
+def param_3_prime(t):
     return 1j * np.exp(t * 1j)
 
 
 @pytest.mark.parametrize(
-    "f,param,param_jac,limits,expected",
+    "f,param,param_prime,limits,expected",
     [
-        (quadratic, param_1, param_1_jac, (0, 1), (2 / 3) * (-1 + 1j)),
+        (quadratic, param_1, param_1_prime, (0, 1), (2 / 3) * (-1 + 1j)),
         (quadratic, param_1, 1 + 1j, (0, 1), (2 / 3) * (-1 + 1j)),
-        (trig, param_2, param_2_jac, (-np.pi, np.pi), 23.097479j),
+        (trig, param_2, param_2_prime, (-np.pi, np.pi), 23.097479j),
         (trig, param_2, 1j, (-np.pi, np.pi), 23.097479j),
-        (z_inv, param_3, param_3_jac, (0, 2 * np.pi), 2 * np.pi * 1j),
+        (z_inv, param_3, param_3_prime, (0, 2 * np.pi), 2 * np.pi * 1j),
     ],
 )
 @pytest.mark.parametrize("method", ["quad", "fixed", "trapezium"])
-def test_complex_integration(f, param, param_jac, limits, expected, method):
+def test_complex_integration(f, param, param_prime, limits, expected, method):
     if method == "fixed":
         quad_kwargs = {"n": 20}
     elif method == "trapezium":
@@ -71,24 +71,24 @@ def test_complex_integration(f, param, param_jac, limits, expected, method):
         quad_kwargs = None
     assert_allclose(
         complex_integration(
-            f, param, param_jac, limits, method=method, quad_kwargs=quad_kwargs
+            f, param, param_prime, limits, method=method, quad_kwargs=quad_kwargs
         ),
         expected,
     )
 
 
 @pytest.mark.parametrize(
-    "f,f_jac,param,param_jac,limits,expected",
+    "f,f_prime,param,param_prime,limits,expected",
     [
-        (z_inv, z_inv_jac, param_3, param_3_jac, (0, 2 * np.pi), -1),
-        (lambda z: z, lambda z: 1, param_3, param_3_jac, (0, 2 * np.pi), 1),
+        (z_inv, z_inv_prime, param_3, param_3_prime, (0, 2 * np.pi), -1),
+        (lambda z: z, lambda z: 1, param_3, param_3_prime, (0, 2 * np.pi), 1),
     ],
 )
 @pytest.mark.parametrize("method", ["quad", "fixed", "trapezium"])
-def test_argument_principal(f, f_jac, param, param_jac, limits, expected, method):
+def test_argument_principal(f, f_prime, param, param_prime, limits, expected, method):
     assert_allclose(
         argument_principle_from_parametrisation(
-            f, f_jac, param, param_jac, limits=limits, method=method
+            f, f_prime, param, param_prime, limits=limits, method=method
         ),
         expected,
     )
@@ -96,14 +96,14 @@ def test_argument_principal(f, f_jac, param, param_jac, limits, expected, method
 
 class TestArgumentPrincipleFromPoints:
     @pytest.mark.parametrize(
-        "f,f_jac,points,expected",
+        "f,f_prime,points,expected",
         [
-            (z_inv, z_inv_jac, [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j], -1),
+            (z_inv, z_inv_prime, [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j], -1),
             (lambda z: z, lambda z: 1, [-10 - 10j, 1 - 1j, 20 + 1j, -1 + 1j], 1),
         ],
     )
     @pytest.mark.parametrize("method", ["quad", "fixed", "trapezium"])
-    def test_finite(self, f, f_jac, points, expected, method):
+    def test_finite(self, f, f_prime, points, expected, method):
         if method == "fixed":
             quad_kwargs = {"n": 50}
         elif method == "trapezium":
@@ -111,26 +111,26 @@ class TestArgumentPrincipleFromPoints:
         else:
             quad_kwargs = None
         res, inf_edges = argument_principle_from_points(
-            f, f_jac, points, method=method, quad_kwargs=quad_kwargs
+            f, f_prime, points, method=method, quad_kwargs=quad_kwargs
         )
         assert_allclose(res, expected)
         assert_equal(inf_edges, set())
 
     @pytest.mark.parametrize(
-        "f,f_jac,points",
+        "f,f_prime,points",
         [
-            (z_inv, z_inv_jac, [-1, 1, 1j]),
+            (z_inv, z_inv_prime, [-1, 1, 1j]),
         ],
     )
-    def test_poles(self, f, f_jac, points):
-        _, inf_edges = argument_principle_from_points(f, f_jac, points)
+    def test_poles(self, f, f_prime, points):
+        _, inf_edges = argument_principle_from_points(f, f_prime, points)
         assert_equal(inf_edges, {frozenset((-1, 1))})
 
     @pytest.mark.parametrize(
-        "f,f_jac,points,expected",
+        "f,f_prime,points,expected",
         [
             (lambda z: z, lambda z: 1, [-10 - 10j, 1 - 1j, 20 + 1j, -1 + 1j], 0),
-            (z_inv, z_inv_jac, [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j], 0),
+            (z_inv, z_inv_prime, [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j], 0),
             (lambda z: z - 0.5, lambda z: 1, [-1 - 1j, 1 - 1j, 1 + 1j, -1 + 1j], 0.5),
             (
                 lambda z: 1 / (z + 0.1),
@@ -140,8 +140,8 @@ class TestArgumentPrincipleFromPoints:
             ),
         ],
     )
-    def test_moment(self, f, f_jac, points, expected):
-        res, inf_edges = argument_principle_from_points(f, f_jac, points, moment=1)
+    def test_moment(self, f, f_prime, points, expected):
+        res, inf_edges = argument_principle_from_points(f, f_prime, points, moment=1)
         assert_allclose(res, expected, atol=1e-12)
         assert_equal(inf_edges, set())
 
@@ -171,7 +171,7 @@ class TestArgumentPrincipleFromTriangulation:
         tri = scipy.spatial.Delaunay(points)
 
         z_minus_p, inf_diags = argument_priciple_of_triangulation(
-            z_inv, z_inv_jac, tri.points, tri.simplices
+            z_inv, z_inv_prime, tri.points, tri.simplices
         )
 
         assert_equal(inf_diags, {frozenset({(-1 + 1j), (1 - 1j)})})
