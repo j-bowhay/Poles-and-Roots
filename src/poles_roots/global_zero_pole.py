@@ -99,6 +99,21 @@ def find_zeros_poles(
             aaa_res = AAA(F, z)
             aaa_reciprocal = AAA(1 / F, z)
 
+            # only report zeros and poles that are within the simplex
+            simplex_points = tri.points[simplex, :]
+
+            aaa_z_minus_p = 0
+            for pole, residual in zip(aaa_res.poles, aaa_res.residuals):
+                if point_in_triangle(np.array([pole.real, pole.imag]), *simplex_points):
+                    poles.append(pole)
+                    residuals.append(residual)
+                    aaa_z_minus_p -= 1
+
+            for zero in aaa_reciprocal.poles:
+                if point_in_triangle(np.array([zero.real, zero.imag]), *simplex_points):
+                    zeros.append(zero)
+                    aaa_z_minus_p += 1
+
             # debug plotting, can remove later
             if plot_aaa:
                 fig, ax = plt.subplots()
@@ -115,21 +130,6 @@ def find_zeros_poles(
                 plot_poles_zeros(aaa_res, ax)
                 ax.plot(z.real, z.imag, ".")
                 plt.show()
-
-            # only report zeros and poles that are within the simplex
-            simplex_points = tri.points[simplex, :]
-
-            aaa_z_minus_p = 0
-            for pole, residual in zip(aaa_res.poles, aaa_res.residuals):
-                if point_in_triangle(np.array([pole.real, pole.imag]), *simplex_points):
-                    poles.append(pole)
-                    residuals.append(residual)
-                    aaa_z_minus_p -= 1
-
-            for zero in aaa_reciprocal.poles:
-                if point_in_triangle(np.array([zero.real, zero.imag]), *simplex_points):
-                    zeros.append(zero)
-                    aaa_z_minus_p += 1
 
             # report if AAA and argument principle are not matching and destroy the
             # triangle if so
