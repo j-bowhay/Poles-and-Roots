@@ -1,7 +1,7 @@
 # To do list:
 
 - [ ] Sample in the triangle not just on
-- [ ] Add stronger tests for AAA
+- [ ] Add stronger unit tests for AAA when clean up function is used
 - [ ] Add different modes for what function AAA should approximate
 - [ ] Implement Delves and Lyness
 - [ ] Implement Kravanja and Barel
@@ -11,3 +11,4 @@
 - [X] Update sampling experiment to include how accurate is the computed pole, how accurate
       is the computed approximation, also consider a holomorphic function
 - [ ] Implement numerical differentiation using 2.7 of https://people.maths.ox.ac.uk/trefethen/publication/PDF/2014_148.pdf
+- [ ] Use a harder function in the subdivision experiment
