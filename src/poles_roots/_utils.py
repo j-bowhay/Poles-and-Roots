@@ -83,3 +83,16 @@ def point_in_polygon(point, points, on=True):
             if not left(point, a, b):
                 return False
     return True
+
+
+def points_in_triangle(A, B, C, N):
+    u = np.linspace(0, 1, num=int(N**0.5))
+    v = np.linspace(0, 1, num=int(N**0.5))
+
+    uu, vv = np.dstack(np.meshgrid(u, v)).reshape(-1, 2).T
+
+    return (
+        np.multiply.outer(A, 1 - uu)
+        + np.multiply.outer(B, uu * (1 - vv))
+        + np.multiply.outer(C, uu * vv)
+    )

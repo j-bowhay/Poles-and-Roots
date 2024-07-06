@@ -1,6 +1,6 @@
 # To do list:
 
-- [ ] Sample in the triangle not just on
+- [X] Sample in the triangle not just on
 - [ ] Add stronger unit tests for AAA when clean up function is used
 - [X] Add different modes for what function AAA should approximate
 - [ ] Implement Delves and Lyness
@@ -12,3 +12,4 @@
       is the computed approximation, also consider a holomorphic function
 - [ ] Implement numerical differentiation using 2.7 of https://people.maths.ox.ac.uk/trefethen/publication/PDF/2014_148.pdf
 - [X] Use a harder function in the subdivision experiment
+- [ ] investigate reference problem 6 in poles_and_zeros.ipynb

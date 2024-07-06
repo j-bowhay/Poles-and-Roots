@@ -9,7 +9,7 @@ from poles_roots.aaa import AAA
 from poles_roots._utils import (
     convert_cart_to_complex,
     point_in_triangle,
-    linspace_on_tri,
+    points_in_triangle,
     compute_incenter,
 )
 from poles_roots.plotting import phase_plot, plot_poles_zeros
@@ -89,7 +89,9 @@ def find_zeros_poles(
         # apply aaa on each simplex
         for simplex, arg_princ_z_minus_p in zip(tri.simplices, arg_princ_z_minus_ps):
             # generate points on the edge of the simplex
-            sample_points = linspace_on_tri(tri.points[simplex, :], num_sample_points)
+            sample_points = points_in_triangle(
+                *tri.points[simplex, :], num_sample_points
+            ).T
             z = convert_cart_to_complex(sample_points)
 
             # sample the function on the edge of the simplex
@@ -107,12 +109,11 @@ def find_zeros_poles(
                     if point_in_triangle(
                         np.array([pole.real, pole.imag]), *simplex_points
                     ):
+                        aaa_z_minus_p += residue
                         if residue > 0:
                             zeros.append(pole)
-                            aaa_z_minus_p += 1
                         else:
                             poles.append(pole)
-                            aaa_z_minus_p -= 1
             elif approx_func == "f":
                 aaa_f = AAA(F, z)
 
