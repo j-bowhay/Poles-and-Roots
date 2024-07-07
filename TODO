@@ -3,7 +3,7 @@
 - [X] Sample in the triangle not just on
 - [ ] Add stronger unit tests for AAA when clean up function is used
 - [X] Add different modes for what function AAA should approximate
-- [ ] Implement Delves and Lyness
+- [X] Implement Delves and Lyness
 - [ ] Implement Kravanja and Barel
 - [X] Detect zeros on the boundary by looking at the magnitude of f(z) rather than doing
       extra quadrature - not needed in the end just removed unnecessary integration
