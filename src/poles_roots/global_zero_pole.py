@@ -12,7 +12,7 @@ from poles_roots._utils import (
     points_in_triangle,
     compute_incenter,
 )
-from poles_roots.plotting import phase_plot, plot_poles_zeros
+from poles_roots.plotting import phase_plot
 
 
 @dataclass
@@ -105,10 +105,21 @@ def find_zeros_poles(
             if approx_func == "f'/f":
                 aaa_log_deriv = AAA(f_prime(z) / F, z)
 
+                if plot_aaa:
+                    fig, axs = plt.subplots(ncols=2, figsize=(15, 5))
+                    phase_plot(
+                        lambda z: f_prime(z) / f(z), axs[0], domain=[-11, 11, -11, 11]
+                    )
+                    phase_plot(aaa_log_deriv, axs[1], domain=[-11, 11, -11, 11])
+                    axs[0].plot(z.real, z.imag, ".")
+                    axs[1].triplot(tri.points[:, 0], tri.points[:, 1], tri.simplices)
+                    axs[1].plot(aaa_log_deriv.poles.real, aaa_log_deriv.poles.imag, "*")
+                    plt.show()
+
                 for pole, residue in zip(aaa_log_deriv.poles, aaa_log_deriv.residues):
                     if point_in_triangle(
                         np.array([pole.real, pole.imag]), *simplex_points
-                    ):
+                    ) and not np.isclose(residue, 0):
                         aaa_z_minus_p += residue
                         if residue > 0:
                             zeros.append(pole)
@@ -169,23 +180,6 @@ def find_zeros_poles(
                         aaa_z_minus_p += 1
             else:
                 raise ValueError("Invalid option for `approx_func`.")
-
-            # debug plotting, can remove later
-            if plot_aaa:
-                fig, ax = plt.subplots()
-                phase_plot(
-                    aaa_f,
-                    ax,
-                    domain=[
-                        np.min(tri.points[:, 0]),
-                        np.max(tri.points[:, 0]),
-                        np.min(tri.points[:, 1]),
-                        np.max(tri.points[:, 1]),
-                    ],
-                )
-                plot_poles_zeros(aaa_f, ax)
-                ax.plot(z.real, z.imag, ".")
-                plt.show()
 
             # report if AAA and argument principle are not matching and destroy the
             # triangle if so
