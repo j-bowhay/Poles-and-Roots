@@ -17,7 +17,7 @@ from poles_roots.plotting import phase_plot, plot_poles_zeros
 
 @dataclass
 class ZerosPolesResult:
-    zeros: np.ndarray
+    roots: np.ndarray
     poles: np.ndarray
     residues: np.ndarray
     points: np.ndarray
@@ -125,7 +125,7 @@ def find_zeros_poles(
                         residues.append(residue)
                         aaa_z_minus_p -= 1
 
-                for zero in aaa_f.zeros:
+                for zero in aaa_f.roots:
                     if point_in_triangle(
                         np.array([zero.real, zero.imag]), *simplex_points
                     ):
@@ -135,7 +135,7 @@ def find_zeros_poles(
             elif approx_func == "1/f":
                 aaa_reciprocal = AAA(1 / F, z)
 
-                for pole in aaa_reciprocal.zeros:
+                for pole in aaa_reciprocal.roots:
                     if point_in_triangle(
                         np.array([pole.real, pole.imag]), *simplex_points
                     ):
@@ -200,7 +200,7 @@ def find_zeros_poles(
 
         if not refine_further:
             return ZerosPolesResult(
-                zeros=np.asarray(zeros),
+                roots=np.asarray(zeros),
                 poles=np.asarray(poles),
                 residues=np.asarray(residues),
                 points=tri.points,
