@@ -12,4 +12,4 @@
       is the computed approximation, also consider a holomorphic function
 - [ ] Implement numerical differentiation using 2.7 of https://people.maths.ox.ac.uk/trefethen/publication/PDF/2014_148.pdf
 - [X] Use a harder function in the subdivision experiment
-- [ ] investigate reference problem 6 in poles_and_zeros.ipynb
+- [X] investigate reference problem 6 in poles_and_zeros.ipynb
