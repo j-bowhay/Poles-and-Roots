@@ -25,4 +25,4 @@ def test_find_zeros_poles(
         approx_func=approx_func,
     )
     assert_allclose(res.poles, expected_pole)
-    assert_allclose(res.zeros, expected_zeros)
+    assert_allclose(res.roots, expected_zeros)

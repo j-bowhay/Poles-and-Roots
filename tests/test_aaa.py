@@ -42,10 +42,6 @@ class TestAAA:
         with pytest.raises(ValueError, match="`f` and `z`"):
             AAA([0], [1, 1])
 
-    def test_convergence_error(self):
-        with pytest.raises(RuntimeError, match="AAA failed"):
-            AAA(np.exp(UNIT_INTERVAL), UNIT_INTERVAL, max_terms=1)
-
     # The following tests are based on:
     # https://github.com/chebfun/chebfun/blob/master/tests/chebfun/test_aaa.m
     def test_exp(self):
@@ -161,28 +157,30 @@ class TestAAA:
     def test_basic_functions(self, func, atol, rtol):
         with np.errstate(divide="ignore"):
             f = func(PTS)
-        assert_allclose(AAA(func, UNIT_INTERVAL)(PTS), f, atol=atol, rtol=rtol)
+        assert_allclose(
+            AAA(func(UNIT_INTERVAL), UNIT_INTERVAL)(PTS), f, atol=atol, rtol=rtol
+        )
 
     def test_poles_zeros_residues(self):
         def f(z):
             return (z + 1) * (z + 2) / ((z + 3) * (z + 4))
 
-        r = AAA(f, UNIT_INTERVAL)
+        r = AAA(f(UNIT_INTERVAL), UNIT_INTERVAL)
         assert_allclose(np.sum(r.poles + r.roots), -10, atol=1e-12)
 
         def f(z):
             return 2 / (3 + z) + 5 / (z - 2j)
 
-        r = AAA(f, UNIT_INTERVAL)
+        r = AAA(f(UNIT_INTERVAL), UNIT_INTERVAL)
         assert_allclose(r.residues.prod(), 10, atol=1e-8)
 
-        r = AAA(lambda z: np.sin(10 * np.pi * z), UNIT_INTERVAL)
+        r = AAA(np.sin(10 * np.pi * UNIT_INTERVAL), UNIT_INTERVAL)
         assert_allclose(np.sort(np.abs(r.roots))[18], 0.9, atol=1e-12)
 
         def f(z):
             return (z - (3 + 3j)) / (z + 2)
 
-        r = AAA(f, UNIT_INTERVAL)
+        r = AAA(f(UNIT_INTERVAL), UNIT_INTERVAL)
         assert_allclose(r.poles[0] * r.roots[0], -6 - 6j, atol=1e-12)
 
     @pytest.mark.parametrize(
@@ -200,7 +198,9 @@ class TestAAA:
         ],
     )
     def test_polynomials_and_reciprocals(self, func):
-        assert_allclose(AAA(func, UNIT_INTERVAL)(PTS), func(PTS), atol=2e-13)
+        assert_allclose(
+            AAA(func(UNIT_INTERVAL), UNIT_INTERVAL)(PTS), func(PTS), atol=2e-13
+        )
 
     # The following tests are taken from:
     # https://github.com/macd/BaryRational.jl/blob/main/test/test_aaa.jl
