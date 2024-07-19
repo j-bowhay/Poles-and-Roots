@@ -6,7 +6,7 @@ from poles_roots.integration import argument_principle_from_points
 
 def delves_lyness(f, f_prime, points, N=None):
     if N is None:
-        N = int(argument_principle_from_points(f, f_prime, points, moment=0)[0].real)
+        N = round(argument_principle_from_points(f, f_prime, points, moment=0)[0].real)
     s = np.empty(N + 1, dtype=np.complex128)
     s[0] = N
 
