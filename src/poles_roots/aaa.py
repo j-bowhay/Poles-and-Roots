@@ -237,7 +237,6 @@ class AAA:
                     A[mask, : m + 1],
                     full_matrices=False,
                     check_finite=False,
-                    lapack_driver="gesvd",
                 )
                 # Treat case of multiple min singular values
                 mm = s == np.min(s)
