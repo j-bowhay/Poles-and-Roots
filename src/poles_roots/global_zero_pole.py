@@ -3,6 +3,7 @@ from typing import Callable
 
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 from poles_roots.triangulation import adaptive_triangulation
 from poles_roots.aaa import AAA
@@ -34,6 +35,7 @@ def find_zeros_poles(
     plot_triangulation=False,
     plot_aaa=False,
     approx_func="f'/f",
+    cross_ref=True,
 ) -> ZerosPolesResult:
     """Compute all the zeros and pole of `f`
 
@@ -87,7 +89,9 @@ def find_zeros_poles(
         new_points = tri.points
 
         # apply aaa on each simplex
-        for simplex, arg_princ_z_minus_p in zip(tri.simplices, arg_princ_z_minus_ps):
+        for simplex, arg_princ_z_minus_p in tqdm(
+            zip(tri.simplices, arg_princ_z_minus_ps)
+        ):
             # generate points on the edge of the simplex
             sample_points = points_in_triangle(
                 *tri.points[simplex, :], num_sample_points
@@ -117,10 +121,14 @@ def find_zeros_poles(
                     plt.show()
 
                 for pole, residue in zip(aaa_log_deriv.poles, aaa_log_deriv.residues):
-                    if point_in_triangle(
-                        np.array([pole.real, pole.imag]), *simplex_points
-                    ) and not np.isclose(residue, 0):
-                        aaa_z_minus_p += residue
+                    if (
+                        point_in_triangle(
+                            np.array([pole.real, pole.imag]), *simplex_points
+                        )
+                        and not np.isclose(residue, 0)
+                        and np.isclose(round(residue.real), residue)
+                    ):
+                        aaa_z_minus_p += round(residue.real)
                         if residue > 0:
                             zeros.append(pole)
                         else:
@@ -183,7 +191,7 @@ def find_zeros_poles(
 
             # report if AAA and argument principle are not matching and destroy the
             # triangle if so
-            if not np.allclose(arg_princ_z_minus_p, aaa_z_minus_p):
+            if cross_ref and not np.allclose(arg_princ_z_minus_p, aaa_z_minus_p):
                 print(
                     f"AAA and argument principle don't match: {aaa_z_minus_p=}, {arg_princ_z_minus_p=}"
                 )
