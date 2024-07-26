@@ -11,6 +11,7 @@ from poles_roots._utils import (
     left_on,
     collinear,
     point_in_polygon,
+    compute_circumcenter,
 )
 
 
@@ -79,3 +80,10 @@ def test_point_in_polygon():
     assert point_in_polygon([0.1, 0.1], [[0, 0], [1, 0], [0, 1]])
     assert not point_in_polygon([-0.1, 0.1], [[0, 0], [1, 0], [0, 1]])
     assert not point_in_polygon([1, 1], [[0, 0], [1, 0], [0, 1]])
+
+
+def test_compute_circumcenter():
+    assert_equal(
+        compute_circumcenter(np.array([3, 2]), np.array([1, 4]), np.array([5, 4])),
+        [3, 4],
+    )

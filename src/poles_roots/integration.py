@@ -1,4 +1,5 @@
 from typing import Optional, Callable
+import warnings
 
 import numpy as np
 import scipy
@@ -30,9 +31,10 @@ def complex_integration(
     quad_kwargs = {} if quad_kwargs is None else quad_kwargs
 
     if method == "quad":
-        return scipy.integrate.quad(
-            _f, *limits, complex_func=True, full_output=True, **quad_kwargs
-        )[0]
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            res = scipy.integrate.quad(_f, *limits, complex_func=True, **quad_kwargs)
+        return res[0]
     elif method == "fixed":
         return scipy.integrate.fixed_quad(_f, *limits, **quad_kwargs)[0]
     elif method == "trapezium":
@@ -82,20 +84,24 @@ def argument_principle_from_points(
 
         param, param_prime = parametrise_between_two_points(a, b)
 
-        edge_res = argument_principle_from_parametrisation(
-            f,
-            f_prime,
-            param,
-            param_prime,
-            (0, 1),
-            quad_kwargs=quad_kwargs,
-            method=method,
-            moment=moment,
-        )
-        res += edge_res
+        failed = False
+        try:
+            edge_res = argument_principle_from_parametrisation(
+                f,
+                f_prime,
+                param,
+                param_prime,
+                (0, 1),
+                quad_kwargs=quad_kwargs,
+                method=method,
+                moment=moment,
+            )
+            res += edge_res
+        except scipy.integrate.IntegrationWarning:
+            failed = True
 
         # if the integration hasn't worked we'll need to destroy this edge
-        if np.isnan(edge_res) or np.isinf(edge_res):
+        if failed or np.isnan(edge_res) or np.isinf(edge_res):
             # we a frozen set here because were integrate each edge twice but in
             # opposite directions we only want to destroy it once
             inf_edges.add(frozenset((a, b)))

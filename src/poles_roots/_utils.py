@@ -41,6 +41,21 @@ def compute_incenter(A, B, C):
     return (a * A + b * B + c * C) / (a + b + c)
 
 
+def compute_circumcenter(A, B, C):
+    d = 2 * (A[0] * (B[1] - C[1]) + B[0] * (C[1] - A[1]) + C[0] * (A[1] - B[1]))
+    ux = (
+        (A[0] * A[0] + A[1] * A[1]) * (B[1] - C[1])
+        + (B[0] * B[0] + B[1] * B[1]) * (C[1] - A[1])
+        + (C[0] * C[0] + C[1] * C[1]) * (A[1] - B[1])
+    ) / d
+    uy = (
+        (A[0] * A[0] + A[1] * A[1]) * (C[0] - B[0])
+        + (B[0] * B[0] + B[1] * B[1]) * (A[0] - C[0])
+        + (C[0] * C[0] + C[1] * C[1]) * (B[0] - A[0])
+    ) / d
+    return (ux, uy)
+
+
 def linspace_on_tri(points, num):
     if points.shape != (3, 2):
         raise ValueError("`points` must have shape")
