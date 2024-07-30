@@ -105,9 +105,10 @@ def points_in_triangle(A, B, C, N):
     v = np.linspace(0, 1, num=int(N**0.5))
 
     uu, vv = np.dstack(np.meshgrid(u, v)).reshape(-1, 2).T
+    mask = vv <= 1 - uu
 
     return (
-        np.multiply.outer(A, 1 - uu)
-        + np.multiply.outer(B, uu * (1 - vv))
-        + np.multiply.outer(C, uu * vv)
+        np.multiply.outer(A, uu[mask])
+        + np.multiply.outer(B, vv[mask])
+        + np.multiply.outer(C, 1 - uu[mask] - vv[mask])
     )
