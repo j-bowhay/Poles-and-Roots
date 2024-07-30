@@ -51,14 +51,14 @@ def plot_poles_zeros(
         np.real(result_object.poles),
         np.imag(result_object.poles),
         "rx",
-        markersize=8,
+        markersize=10,
         label="Computed Poles",
     )
     ax.plot(
         np.real(result_object.roots),
         np.imag(result_object.roots),
         "gx",
-        markersize=8,
+        markersize=10,
         label="Computed Zeros",
     )
     if expected_poles is not None:
@@ -68,7 +68,7 @@ def plot_poles_zeros(
             "ro",
             label="Expected Poles",
             mfc="none",
-            markersize=11,
+            markersize=13,
         )
     if expected_zeros is not None:
         ax.plot(
@@ -77,7 +77,7 @@ def plot_poles_zeros(
             "go",
             label="Expected Poles",
             mfc="none",
-            markersize=11,
+            markersize=13,
         )
 
 
