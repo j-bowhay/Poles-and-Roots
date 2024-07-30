@@ -11,7 +11,6 @@ from poles_roots._utils import (
     convert_cart_to_complex,
     point_in_triangle,
     points_in_triangle,
-    compute_incenter,
 )
 from poles_roots.plotting import phase_plot
 
@@ -197,7 +196,7 @@ def find_zeros_poles(
                 )
                 refine_further = True
                 new_points = np.concatenate(
-                    [new_points, compute_incenter(*simplex_points)[np.newaxis]]
+                    [new_points, simplex_points.mean(axis=0)[np.newaxis]]
                 )
 
         if not refine_further:

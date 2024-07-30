@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from poles_roots.integration import argument_priciple_of_triangulation
 from poles_roots.plotting import plot_triangulation_with_argument_principle
-from poles_roots._utils import point_in_polygon, compute_circumcenter
+from poles_roots._utils import point_in_polygon
 
 
 def adaptive_triangulation(
@@ -99,7 +99,7 @@ def adaptive_triangulation(
             # destroy triangles where |Z-P| is too large
             for i, simplex in enumerate(tri.simplices[insert_index]):
                 # TODO: check that this point is in the convex hull
-                points_to_add[i, :] = compute_circumcenter(*tri.points[simplex, :])
+                points_to_add[i, :] = tri.points[simplex, :].mean(axis=0)
 
         # add new points to triangulation
         points = np.concatenate([points, points_to_add])
