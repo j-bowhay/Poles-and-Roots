@@ -35,6 +35,7 @@ def find_zeros_poles(
     plot_aaa=False,
     approx_func="f'/f",
     cross_ref=True,
+    rng=None,
 ) -> ZerosPolesResult:
     """Compute all the zeros and pole of `f`
 
@@ -79,6 +80,7 @@ def find_zeros_poles(
             arg_principal_threshold,
             quad_kwargs=quad_kwargs,
             plot=plot_triangulation,
+            rng=rng,
         )
 
         poles = []
