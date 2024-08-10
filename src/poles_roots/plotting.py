@@ -2,6 +2,22 @@ import numpy as np
 
 from poles_roots.aaa import AAA
 
+from colorsys import hls_to_rgb
+
+
+def colorize(z):
+    r = np.abs(z)
+    arg = np.angle(z) 
+
+    h = (arg + np.pi)  / (2 * np.pi) + 0.5
+    l = 1.0 - 1.0/(1.0 + r**0.3)
+    s = 0.8
+
+    c = np.vectorize(hls_to_rgb) (h,l,s) # --> tuple
+    c = np.array(c)  # -->  array of (3,n,m) shape, but need (n,m,3)
+    c = c.transpose(1,2,0)
+    return c
+
 
 def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
     """Plots the complex phase plane of `f`."""
@@ -14,20 +30,10 @@ def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
     [xx, yy] = np.meshgrid(x, y)
     zz = xx + yy * 1j
 
-    if classic:
-
-        def phi(t):
-            return t
-    else:
-
-        def phi(t):
-            return t - 0.5 * np.cos(1.5 * t) ** 3 * np.sin(1.5 * t)
-
-    angle = np.mod(phi(np.angle(f(zz)) - np.pi) + np.pi - theta, 2 * np.pi) + theta
     im = ax.pcolormesh(
         np.real(zz),
         np.imag(zz),
-        angle,
+        colorize(f(zz)),
         shading="gouraud",
         cmap="twilight_shifted",
     )
