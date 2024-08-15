@@ -1,27 +1,20 @@
 import numpy as np
-
+from matplotlib import cm
+from matplotlib import colors
 from poles_roots.aaa import AAA
-
-from colorsys import hls_to_rgb
 
 
 def colorize(z):
-    r = np.abs(z)
-    arg = np.angle(z)
-
-    h = (arg + np.pi) / (2 * np.pi) + 0.5
-    l = 0.5  # 1.0 - 1.0 / (1.0 + (r/r.max())**0.005)
-    s = 0.8
-
-    c = np.vectorize(hls_to_rgb)(h, l, s)  # --> tuple
-    c = np.array(c)  # -->  array of (3,n,m) shape, but need (n,m,3)
-    c = c.transpose(1, 2, 0)
-    return c
+    s1 = np.mod(np.log(np.abs(z)), 1)
+    s2 = np.mod(np.angle(z), 2 * np.pi) / (2 * np.pi)
+    col = colors.rgb_to_hsv(cm.hsv(s2)[:, :, :3])
+    x = 0.6 + 0.4 * s1
+    col[:, :, 2] *= x
+    return colors.hsv_to_rgb(col)
 
 
-def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
+def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=1000):
     """Plots the complex phase plane of `f`."""
-    theta = -np.pi
     domain = [-1, 1, -1, 1] if domain is None else domain
 
     x = np.linspace(domain[0], domain[1], num=n_points)
@@ -30,17 +23,9 @@ def phase_plot(f, ax, /, *, domain=None, classic=False, n_points=500):
     [xx, yy] = np.meshgrid(x, y)
     zz = xx + yy * 1j
 
-    im = ax.pcolormesh(
-        np.real(zz),
-        np.imag(zz),
-        colorize(f(zz)),
-        shading="gouraud",
-        cmap="twilight_shifted",
-    )
+    im = ax.imshow(colorize(f(zz)), extent=domain, origin="lower", aspect="auto")
     ax.set_xlabel(r"$\Re$(z)")
     ax.set_ylabel(r"$\Im$(z)")
-    ax.set_xlim(domain[:2])
-    ax.set_ylim(domain[2:])
     return im
 
 
@@ -115,3 +100,14 @@ def plot_triangulation_with_argument_principle(
             f"{np.real(z_minus_p[i]):{formatting}}",
             color=color,
         )
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+
+    def f(z):
+        return np.sin(np.sqrt(z**2 + 1)) - z
+
+    fig, ax = plt.subplots()
+    phase_plot(f, ax, domain=[-5, 5, -5, 5])
+    plt.show()
