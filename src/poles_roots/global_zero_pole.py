@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Callable
 
 import numpy as np
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from poles_roots.triangulation import adaptive_triangulation
@@ -12,7 +11,6 @@ from poles_roots._utils import (
     point_in_triangle,
     points_in_triangle,
 )
-from poles_roots.plotting import phase_plot
 
 
 @dataclass
@@ -31,9 +29,6 @@ def find_zeros_poles(
     num_sample_points: int,
     arg_principal_threshold: float,
     quad_kwargs=None,
-    plot_triangulation=False,
-    plot_aaa=False,
-    approx_func="f'/f",
     cross_ref=True,
     rng=None,
 ) -> ZerosPolesResult:
@@ -46,26 +41,18 @@ def find_zeros_poles(
     f_prime : Callable
         Derivative of `f`.
     initial_points : array
-        Points describing the Jordan curve to search the interior of.
+        Points describing the search region.
     num_sample_points : int
         Number of points to sample on the boundary of each simplex for aaa.
-
-        TODO: should probably do something more sophisticated accounting for the size
-        of the simplex
-
     arg_principal_threshold : float
         Threshold value for Cauchy's argument principle for the adaptive triangulation
     quad_kwargs : dict, optional
         arguments to be passed to `scipy.integrate.quad`, by default None
-    plot_triangulation : bool, optional
-        Plots each step of the adaptive triangulation for debugging
-    plot_aaa : bool, optional
-        Plots each AAA approximation for debugging
 
     Returns
     -------
     _ZerosPolesResult
-        _description_
+        Results object
     """
     points = initial_points
 
@@ -79,7 +66,6 @@ def find_zeros_poles(
             points,
             arg_principal_threshold,
             quad_kwargs=quad_kwargs,
-            plot=plot_triangulation,
             rng=rng,
         )
 
@@ -107,88 +93,19 @@ def find_zeros_poles(
 
             aaa_z_minus_p = 0
 
-            if approx_func == "f'/f":
-                aaa_log_deriv = AAA(f_prime(z) / F, z)
+            aaa_log_deriv = AAA(f_prime(z) / F, z)
 
-                if plot_aaa:
-                    fig, axs = plt.subplots(ncols=2, figsize=(15, 5))
-                    phase_plot(
-                        lambda z: f_prime(z) / f(z), axs[0], domain=[-11, 11, -11, 11]
-                    )
-                    phase_plot(aaa_log_deriv, axs[1], domain=[-11, 11, -11, 11])
-                    axs[0].plot(z.real, z.imag, ".")
-                    axs[1].triplot(tri.points[:, 0], tri.points[:, 1], tri.simplices)
-                    axs[1].plot(aaa_log_deriv.poles.real, aaa_log_deriv.poles.imag, "*")
-                    plt.show()
-
-                for pole, residue in zip(aaa_log_deriv.poles, aaa_log_deriv.residues):
-                    if (
-                        point_in_triangle(
-                            np.array([pole.real, pole.imag]), *simplex_points
-                        )
-                        and not np.isclose(residue, 0)
-                        and np.isclose(round(residue.real), residue)
-                    ):
-                        aaa_z_minus_p += round(residue.real)
-                        if residue > 0:
-                            zeros.append(pole)
-                        else:
-                            poles.append(pole)
-            elif approx_func == "f":
-                aaa_f = AAA(F, z)
-
-                for pole, residue in zip(aaa_f.poles, aaa_f.residues):
-                    if point_in_triangle(
-                        np.array([pole.real, pole.imag]), *simplex_points
-                    ):
+            for pole, residue in zip(aaa_log_deriv.poles, aaa_log_deriv.residues):
+                if (
+                    point_in_triangle(np.array([pole.real, pole.imag]), *simplex_points)
+                    and not np.isclose(residue, 0)
+                    and np.isclose(round(residue.real), residue)
+                ):
+                    aaa_z_minus_p += round(residue.real)
+                    if residue > 0:
+                        zeros.append(pole)
+                    else:
                         poles.append(pole)
-                        residues.append(residue)
-                        aaa_z_minus_p -= 1
-
-                for zero in aaa_f.roots:
-                    if point_in_triangle(
-                        np.array([zero.real, zero.imag]), *simplex_points
-                    ):
-                        zeros.append(zero)
-                        aaa_z_minus_p += 1
-
-            elif approx_func == "1/f":
-                aaa_reciprocal = AAA(1 / F, z)
-
-                for pole in aaa_reciprocal.roots:
-                    if point_in_triangle(
-                        np.array([pole.real, pole.imag]), *simplex_points
-                    ):
-                        poles.append(pole)
-                        aaa_z_minus_p -= 1
-
-                for zero in aaa_reciprocal.poles:
-                    if point_in_triangle(
-                        np.array([zero.real, zero.imag]), *simplex_points
-                    ):
-                        zeros.append(zero)
-                        aaa_z_minus_p += 1
-
-            elif approx_func == "both":
-                aaa_f = AAA(F, z)
-                aaa_reciprocal = AAA(1 / F, z)
-
-                for pole, residue in zip(aaa_f.poles, aaa_f.residues):
-                    if point_in_triangle(
-                        np.array([pole.real, pole.imag]), *simplex_points
-                    ):
-                        poles.append(pole)
-                        residues.append(residue)
-                        aaa_z_minus_p -= 1
-
-                for zero in aaa_reciprocal.poles:
-                    if point_in_triangle(
-                        np.array([zero.real, zero.imag]), *simplex_points
-                    ):
-                        zeros.append(zero)
-                        aaa_z_minus_p += 1
-            else:
-                raise ValueError("Invalid option for `approx_func`.")
 
             # report if AAA and argument principle are not matching and destroy the
             # triangle if so
@@ -211,15 +128,3 @@ def find_zeros_poles(
             )
         else:
             points = convert_cart_to_complex(new_points)
-
-
-if __name__ == "__main__":
-    from poles_roots import reference_problems
-
-    find_zeros_poles(
-        reference_problems.func0,
-        reference_problems.func0_prime,
-        initial_points=[-10 - 10j, 10 - 10j, 10 + 10j, -10 + 10j],
-        arg_principal_threshold=4.1,
-        num_sample_points=100,
-    )
