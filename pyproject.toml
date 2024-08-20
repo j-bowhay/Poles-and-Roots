@@ -25,7 +25,7 @@ requires = ["setuptools>=43.0.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.ruff]
-
+include = ["pyproject.toml", "src/**/*.py"]
 src = ["src"]
 
 # Exclude a variety of commonly ignored directories.
