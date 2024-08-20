@@ -27,3 +27,7 @@ def delves_lyness(f, f_prime, points, N=None, quad_kwargs=None):
     coeffs[1:] = np.linalg.solve(A, -s[1:])
 
     return np.roots(coeffs)
+
+
+points = np.array([[-1 - 1j], [1 - 1j], [1 + 1j], [-1 + 1j]])
+delves_lyness(lambda z: z, lambda z: 1, points)

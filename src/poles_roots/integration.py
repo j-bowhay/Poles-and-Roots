@@ -22,11 +22,11 @@ def complex_integration(
     if callable(param_prime):
 
         def _f(t):
-            return f(param(t)) * param_prime(t)
+            return np.squeeze(f(param(t)) * param_prime(t))
     else:
 
         def _f(t):
-            return f(param(t)) * param_prime
+            return np.squeeze(f(param(t)) * param_prime)
 
     quad_kwargs = {} if quad_kwargs is None else quad_kwargs
 
