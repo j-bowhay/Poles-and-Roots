@@ -17,6 +17,32 @@ def adaptive_triangulation(
     quad_kwargs: Optional[dict] = None,
     rng=None,
 ):
+    """Adaptively subdivides the search region.
+
+    Parameters
+    ----------
+    f : callable
+        Function
+    f_prime : callable
+        Derivative of `f`
+    initial_points : array_like
+        Initial points of triangulation
+    arg_principal_threshold : float
+        Maximum allowable value of the argument principle.
+    plot : bool, optional
+        Debugging plots, by default False
+    quad_kwargs : Optional[dict], optional
+        Options to pass to integration, by default None
+    rng : random_state, optional
+        Random number seeding, by default None
+
+    Returns
+    -------
+    tri
+        Triangulation object
+    z_minus_p
+        Value of the argument principe in each triangle
+    """
     if rng is None:
         rng = np.random.default_rng()
 
@@ -127,26 +153,3 @@ def adaptive_triangulation(
         plt.show()
 
     return tri, z_minus_p
-
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-
-    from poles_roots.global_zero_pole import find_zeros_poles
-    from poles_roots.plotting import phase_plot, plot_poles_zeros
-
-    res = find_zeros_poles(
-        lambda z: 1 / z,
-        lambda z: -1 / z**2,
-        initial_points=[-5 - 5j, 5 - 5j, 5 + 5j, -5 + 5j],
-        arg_principal_threshold=1.1,
-        num_sample_points=50,
-    )
-
-    fig, axs = plt.subplots(ncols=2, figsize=(12, 6))
-    phase_plot(lambda z: 1 / z, axs[0], domain=[-6, 6, -6, 6])
-    phase_plot(lambda z: 1 / z, axs[1], domain=[-6, 6, -6, 6])
-    plot_poles_zeros(res, axs[0])
-    axs[0].legend()
-    axs[1].triplot(res.points[:, 0], res.points[:, 1], res.simplices)
-    plt.show()

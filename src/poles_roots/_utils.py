@@ -42,6 +42,7 @@ def compute_incenter(A, B, C):
 
 
 def compute_circumcenter(A, B, C):
+    """Computes circumcenter of a triangle"""
     d = 2 * (A[0] * (B[1] - C[1]) + B[0] * (C[1] - A[1]) + C[0] * (A[1] - B[1]))
     ux = (
         (A[0] * A[0] + A[1] * A[1]) * (B[1] - C[1])
@@ -57,6 +58,7 @@ def compute_circumcenter(A, B, C):
 
 
 def linspace_on_tri(points, num):
+    """Generate linearly spaced points in a triangle"""
     if points.shape != (3, 2):
         raise ValueError("`points` must have shape")
     points = np.vstack([points, points[0, :]])
@@ -101,6 +103,7 @@ def point_in_polygon(point, points, on=True):
 
 
 def points_in_triangle(A, B, C, N):
+    """Generate `N` points in the triangle ABC"""
     u = np.linspace(0, 1, num=int(N**0.5))
     v = np.linspace(0, 1, num=int(N**0.5))
 

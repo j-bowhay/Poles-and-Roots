@@ -100,14 +100,3 @@ def plot_triangulation_with_argument_principle(
             f"{np.real(z_minus_p[i]):{formatting}}",
             color=color,
         )
-
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-
-    def f(z):
-        return np.sin(np.sqrt(z**2 + 1)) - z
-
-    fig, ax = plt.subplots()
-    phase_plot(f, ax, domain=[-5, 5, -5, 5])
-    plt.show()

@@ -5,6 +5,26 @@ from poles_roots.integration import argument_principle_from_points
 
 
 def delves_lyness(f, f_prime, points, N=None, quad_kwargs=None):
+    """Compute the zeros of `f` using the Delves and Lyness method.
+
+    Parameters
+    ----------
+    f : callable
+        Function to compute the zeros of.
+    f_prime : callable
+        Derivative of `f`
+    points : ndarray
+        Points defining region
+    N : int, optional
+        Number of zeros in the region, by default None
+    quad_kwargs : dict, optional
+        Options to pass to integrator, by default None
+
+    Returns
+    -------
+    array
+        Computed zeros
+    """
     if N is None:
         N = round(
             argument_principle_from_points(
