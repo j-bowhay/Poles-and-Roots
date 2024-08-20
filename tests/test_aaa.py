@@ -66,7 +66,6 @@ class TestAAA:
         # Test for spurious poles
         assert np.min(np.abs(r.residues)) > 1e-13
 
-    @pytest.mark.skip
     def test_short_cases(self):
         # Computed using Chebfun:
         # >> format long
