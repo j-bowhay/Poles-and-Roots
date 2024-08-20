@@ -10,7 +10,8 @@ authors = [
 dependencies = [
     "numpy",
     "scipy",
-    "matplotlib"
+    "matplotlib",
+    "tqdm",
 ]
 
 [project.optional-dependencies]
