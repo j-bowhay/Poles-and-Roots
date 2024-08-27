@@ -57,7 +57,6 @@ def find_zeros_poles(
     points = initial_points
 
     # iterate until AAA and arg principle agree
-    # TODO: don't iterate forever!
     while True:
         # triangulate the domain
         tri, arg_princ_z_minus_ps = adaptive_triangulation(

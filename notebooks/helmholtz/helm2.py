@@ -74,7 +74,7 @@ res = find_zeros_poles(
     N,
     N_prime,
     initial_points=[0 + 0.01j, 0 - 20j, 3 - 20j, 3 + 0.01j],
-    num_sample_points=500,
+    num_sample_points=300,
     arg_principal_threshold=10,
     cross_ref=False,
 )
